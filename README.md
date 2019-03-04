@@ -1,2 +1,2 @@
-# krs
-ksr
+# klasyfikacja tekstu
+klasyfikacja tekstu
