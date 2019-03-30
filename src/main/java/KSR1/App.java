@@ -18,8 +18,10 @@ public class App {
         System.out.println(sgm.articles.get(0).toString());
 
         List<String> words = sgm.articles.get(0).getWords();
-        for (int i = 0; i < words.size(); i++) {
-            System.out.println(words.get(i));
+        for (String word : words) {
+            System.out.println(word);
         }
+
+        System.out.println("\n" + words.size());
     }
 }

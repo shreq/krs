@@ -1,5 +1,8 @@
 package KSR1;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -15,17 +18,24 @@ public class Article {
         return "Article(" +
                 "\n   Topics: " + topics.toString() +
                 "\n   Places: " + places.toString() +
-                "\n   Title: " + title + "\n)";
+                "\n   Title:  " + title + "\n)";
     }
 
     public List<String> getWords() {
+        List<String> stopwords = new ArrayList<>();
+        try {
+            stopwords = Files.readAllLines(Paths.get("src/main/resources/stopwords.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         List<String> result = new ArrayList<>();
 
-        StringTokenizer tokenizer = new StringTokenizer(text, " \n\r\t,.");
+        StringTokenizer tokenizer = new StringTokenizer(text, " \n\r\t,./+&#;");
         while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken();
+            String token = tokenizer.nextToken().toLowerCase();
 
-            if (!isNumeric(token)) {
+            if (!isNumeric(token) && token.length() > 1 && !stopwords.contains(token)) {
                 result.add(token);
             }
         }
