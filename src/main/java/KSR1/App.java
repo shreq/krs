@@ -17,7 +17,7 @@ public class App {
         }
         System.out.println(sgm.articles.get(0).toString());
 
-        List<String> words = sgm.articles.get(0).getWords();
+        List<String> words = sgm.articles.get(0).getUniqueWords();
         for (String word : words) {
             System.out.println(word);
         }

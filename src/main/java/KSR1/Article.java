@@ -21,22 +21,55 @@ public class Article {
                 "\n   Title:  " + title + "\n)";
     }
 
+    public List<String> getTokens() {
+        List<String> result = new ArrayList<>();
+
+        StringTokenizer tokenizer = new StringTokenizer(text, " \n\r\t,./+&#;");
+        while (tokenizer.hasMoreTokens()) {
+            result.add(tokenizer.nextToken());
+        }
+
+        return result;
+    }
+
+    public List<String> getAllWords() {
+        List<String> result = new ArrayList<>();
+
+        for (String token : getTokens()) {
+            if (!isNumeric(token) && token.length() > 1) {
+                result.add(token);
+            }
+        }
+
+        return result;
+    }
+
     public List<String> getWords() {
         List<String> stopwords = new ArrayList<>();
         try {
             stopwords = Files.readAllLines(Paths.get("src/main/resources/stopwords.txt"));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
 
         List<String> result = new ArrayList<>();
 
-        StringTokenizer tokenizer = new StringTokenizer(text, " \n\r\t,./+&#;");
-        while (tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken().toLowerCase();
+        for (String word : getAllWords()) {
+            if (word.length() > 1 && !stopwords.contains(word.toLowerCase())) {
+                result.add(word);
+            }
+        }
 
-            if (!isNumeric(token) && token.length() > 1 && !stopwords.contains(token)) {
-                result.add(token);
+        return result;
+    }
+
+    public List<String> getUniqueWords() {
+        List<String> result = new ArrayList<>();
+
+        for (String word : getWords()) {
+            if (!result.contains(word)) {
+                result.add(word);
             }
         }
 
