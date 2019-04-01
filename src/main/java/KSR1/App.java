@@ -2,15 +2,19 @@ package KSR1;
 
 import KSR1.Preprocessing.LancasterStemmer;
 import KSR1.Preprocessing.Stemmer;
+import KSR1.Preprocessing.StopWordFilter;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.function.Predicate;
 
 public class App {
     public static void main(String[] args)
     {
         File file = new File("src/main/resources/reuters/reut2-000.sgm");
 
-        SGMFile sgm = null;
+        SGMFile sgm;
         try {
             sgm = SGMFile.loadFile(file);
         } catch (FileNotFoundException e) {
@@ -19,11 +23,12 @@ public class App {
         }
         Article article = sgm.articles.get(0);
         System.out.println(article.toString());
-        String[] words = article.text.split("\\s+");
+        ArrayList<String> words = new ArrayList<>(Arrays.asList(article.text.split("\\s+")));
+        words.removeIf(StopWordFilter::ifFilter);
         Stemmer stemmer = new LancasterStemmer();
         for (int i = 0; i < 40; i++) {
-            System.out.println(words[i]);
-            System.out.println(stemmer.stem(words[i]));
+            System.out.println(words.get(i));
+            System.out.println(stemmer.stem(words.get(i)));
             System.out.println("========");
         }
     }
