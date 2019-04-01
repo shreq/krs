@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.*;
 
-public class SGM {
+public class SGMFile {
 
     List<Article> articles = new ArrayList<Article>();
 
-    static SGM parse(File file) throws FileNotFoundException {
+    static SGMFile loadFile(File file) throws FileNotFoundException {
         Scanner scanner = new Scanner(file);
 
-        SGM result = new SGM();
+        SGMFile result = new SGMFile();
         while (true){
             String reuters = scanner.findWithinHorizon("<REUTERS", 10000);
             if(reuters == null || reuters.isEmpty()){
@@ -51,7 +51,7 @@ public class SGM {
             }
             article.title = matchResult.group(1).replace("&lt;", "<");
 
-            //parse body
+            // parse body
             Pattern bodyPattern = Pattern.compile("<BODY>(.+?)</BODY>", Pattern.DOTALL);
             scanner.findWithinHorizon(bodyPattern, 10000000);
             matchResult = scanner.match();

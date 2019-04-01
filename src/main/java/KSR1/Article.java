@@ -12,8 +12,8 @@ public class Article {
     @Override
     public String toString() {
         return "Article(" +
-                "\n   Topics: " + topics.toString() +
-                "\n   Places: " + places.toString() +
-                "\n   Title: " + title + "\n)";
+                "\n  topics=" + topics.toString() +
+                "\n  places=" + places.toString() +
+                "\n  title=" + title + "\n)";
     }
 }
