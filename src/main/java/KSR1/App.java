@@ -22,7 +22,7 @@ public class App {
         }
         Article article = sgm.articles.get(0);
         System.out.println(article.toString());
-        ArrayList<String> words = new ArrayList<>(Arrays.asList(article.text.split("\\s+")));
+        ArrayList<String> words = article.text;
         words.removeIf(StopWordFilter::filter);
         Stemmer stemmer = new LancasterStemmer();
         for (int i = 0; i < 40; i++) {

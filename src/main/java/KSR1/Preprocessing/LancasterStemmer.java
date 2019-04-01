@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- * http://horusiath.blogspot.com/2012/08/nlp-stemming-i-lematyzacja.html
+ * Lancaster stemming algorithm implementation.
+ * Based on <a href="http://horusiath.blogspot.com/2012/08/nlp-stemming-i-lematyzacja.html">this blog post</a>
  */
 public class LancasterStemmer implements Stemmer {
     @Override
@@ -70,6 +71,7 @@ public class LancasterStemmer implements Stemmer {
 
     private HashMap<Character, LinkedList<StemRule>> rulesDictionary;
 
+    // region stemming rules descriptions
     static final private String[] rulesDescriptions =
             {
                     "ai*2.",     // -ia > - if intact
@@ -188,4 +190,5 @@ public class LancasterStemmer implements Stemmer {
                     "zi2>",      // -iz > -
                     "zy1s."      // -yz > -ys
             };
+    // endregion
 }

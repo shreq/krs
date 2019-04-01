@@ -21,37 +21,37 @@ public class SGMFile {
                 return result;
             }
             Article article = new Article();
-            // parse topics
+            // region parse topics
             scanner.findWithinHorizon("<TOPICS>", 1000);
             while (true){
                 scanner.findWithinHorizon("<D>(.+?)</D>|</TOPICS>", 100);
                 MatchResult matchResult = scanner.match();
-                if(matchResult.groupCount() < 1 || matchResult.group(1) == null)
-                {
+                if(matchResult.groupCount() < 1 || matchResult.group(1) == null) {
                     break;
                 }
                 article.topics.add(matchResult.group(1));
             }
-            // parse places
+            // endregion
+            // region parse places
             scanner.findWithinHorizon("<PLACES>", 1000);
             while (true){
                 scanner.findWithinHorizon("<D>(.+?)</D>|</PLACES>", 100);
                 MatchResult matchResult = scanner.match();
-                if(matchResult.groupCount() < 1 || matchResult.group(1) == null)
-                {
+                if(matchResult.groupCount() < 1 || matchResult.group(1) == null) {
                     break;
                 }
                 article.places.add(matchResult.group(1));
             }
-            // parse title
+            // endregion
+            // region parse title
             scanner.findWithinHorizon("<TITLE>(.+?)</TITLE>", 100000);
             MatchResult matchResult = scanner.match();
             if(matchResult.groupCount() < 1){
                 continue;
             }
             article.title = matchResult.group(1).replace("&lt;", "<");
-
-            // parse body
+            // endregion
+            // region parse body
             Pattern bodyPattern = Pattern.compile("<BODY>(.+?)</BODY>", Pattern.DOTALL);
             scanner.findWithinHorizon(bodyPattern, 10000000);
             matchResult = scanner.match();
@@ -59,6 +59,7 @@ public class SGMFile {
                 continue;
             }
             article.text = matchResult.group(1).replace("&lt;", "<");
+            // endregion
             result.articles.add(article);
         }
     }
