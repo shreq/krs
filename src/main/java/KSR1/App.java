@@ -7,7 +7,6 @@ import KSR1.Preprocessing.StopWordFilter;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.function.Predicate;
 
 public class App {
     public static void main(String[] args)
@@ -24,7 +23,7 @@ public class App {
         Article article = sgm.articles.get(0);
         System.out.println(article.toString());
         ArrayList<String> words = new ArrayList<>(Arrays.asList(article.text.split("\\s+")));
-        words.removeIf(StopWordFilter::ifFilter);
+        words.removeIf(StopWordFilter::filter);
         Stemmer stemmer = new LancasterStemmer();
         for (int i = 0; i < 40; i++) {
             System.out.println(words.get(i));

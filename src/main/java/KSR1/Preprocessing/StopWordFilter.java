@@ -7,8 +7,22 @@ import java.util.HashSet;
  * http://snowball.tartarus.org/algorithms/english/stop.txt
  */
 public class StopWordFilter {
-    public static boolean ifFilter(String word) {
+    /**
+     * Should word be filtered
+     * @param word word to be checked
+     * @return true if word should be filtered out
+     */
+    public static boolean filter(String word) {
         return stopWords.contains(word);
+    }
+
+    /**
+     * Provided for compatibility with stream filtering etc
+     * @param word word to check
+     * @return false if word should be filtered out
+     */
+    public static boolean isValidWord(String word) {
+        return !stopWords.contains(word);
     }
 
     static final private HashSet<String> stopWords =
