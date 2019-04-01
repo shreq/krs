@@ -15,15 +15,16 @@ public class Article {
      * @return list of words
      */
     ArrayList<String> getWords(){
-        ArrayList<String> textArray = new ArrayList<>(Arrays.asList(text.split("\\s+")));
+        ArrayList<String> textArray = new ArrayList<>(Arrays.asList(text.split(",?\\s+|,")));
         String previous = textArray.get(0);
         textArray.set(0, stripRight(previous.toLowerCase()));
 
         for(int i=1; i < textArray.size(); i++){
             String current = textArray.get(i);
             if(previous.endsWith(".")){
-                textArray.set(i, stripRight(current.toLowerCase()));
+                current = current.toLowerCase();
             }
+            textArray.set(i, stripRight(current));
             previous = current;
         }
         textArray.removeIf(this::isNumeric);
@@ -40,7 +41,7 @@ public class Article {
     }
 
     private String stripRight(String word){
-        if(word.endsWith(",") || word.endsWith(".")){
+        if(word.endsWith(".")){
             return word.substring(0, word.length()-1);
         }
         return word;
