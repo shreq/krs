@@ -14,7 +14,7 @@ public class Article {
      * Get all words from text. First word in sentence is converted to lower case.
      * @return list of words
      */
-    ArrayList<String> getWords(){
+    public ArrayList<String> getWords(){
         ArrayList<String> textArray = new ArrayList<>(Arrays.asList(text.split(",?\\s+|,")));
         String previous = textArray.get(0);
         textArray.set(0, stripRight(previous.toLowerCase()));
