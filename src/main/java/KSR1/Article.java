@@ -9,7 +9,6 @@ public class Article {
     String text;
     List<String> topics = new ArrayList<String>();
     List<String> places = new ArrayList<String>();
-
     /**
      * Get all words from text. First word in sentence is converted to lower case.
      * @return list of words
@@ -53,5 +52,17 @@ public class Article {
                 "\n  topics=" + topics.toString() +
                 "\n  places=" + places.toString() +
                 "\n  title=" + title + "\n)";
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public List<String> getTopics() {
+        return topics;
+    }
+
+    public List<String> getPlaces() {
+        return places;
     }
 }
