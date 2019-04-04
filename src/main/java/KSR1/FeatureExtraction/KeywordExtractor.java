@@ -1,7 +1,9 @@
 package KSR1.FeatureExtraction;
 
 import KSR1.Article;
+import KSR1.Statistics.DocumentCollectionStats;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -18,7 +20,20 @@ public class KeywordExtractor implements FeatureExtractor {
 
     @Override
     public List<Double> extract(Article article) {
-        // TODO: implement
-        throw new RuntimeException("not implemented");
+        ArrayList<Double> result = new ArrayList<>();
+
+        int appearances = 0;
+        ArrayList<String> words = article.getWords();
+        for (String keyword : keywords) {
+            for (String word : words) {
+                if (word.equals(keyword)) {
+                    appearances++;
+                }
+            }
+            result.add(((double) appearances / (double) words.size()) * ExtractionDB.getInstance().getIdf(keyword));
+            appearances = 0;
+        }
+
+        return result;
     }
 }
