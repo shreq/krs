@@ -34,12 +34,5 @@ public class App {
             System.out.println(stemmer.stem(words.get(i)));
             System.out.println("========");
         }
-
-        System.out.println("\nSimilarity test:");
-        String wordA = "PROGRAMMER", wordB = "PROGRAMMING";
-        Similarity similarity = new NGram(3);
-        System.out.println("n-gram, n=3: " + similarity.compare(wordA, wordB));
-        similarity = new GenBoundNGram(2, 5);
-        System.out.println("generalized bound n-gram, n=[2..5]: " + similarity.compare(wordA, wordB));
     }
 }

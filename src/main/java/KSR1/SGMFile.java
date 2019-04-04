@@ -9,9 +9,9 @@ import java.util.regex.*;
 
 public class SGMFile {
 
-    List<Article> articles = new ArrayList<Article>();
+    public List<Article> articles = new ArrayList<Article>();
 
-    static SGMFile loadFile(File file) throws FileNotFoundException {
+    static public SGMFile loadFile(File file) throws FileNotFoundException {
         Scanner scanner = new Scanner(file);
 
         SGMFile result = new SGMFile();
@@ -49,7 +49,7 @@ public class SGMFile {
             if(matchResult.groupCount() < 1){
                 continue;
             }
-            article.title = matchResult.group(1).replace("&lt;", "<");
+            article.title = stripXMLentities(matchResult.group(1));
             // endregion
             // region parse body
             Pattern bodyPattern = Pattern.compile("<BODY>(.+?)</BODY>", Pattern.DOTALL);
@@ -58,9 +58,18 @@ public class SGMFile {
             if(matchResult.groupCount() < 1){
                 continue;
             }
-            article.text = matchResult.group(1).replace("&lt;", "<");
+            article.text = stripXMLentities(matchResult.group(1));
             // endregion
             result.articles.add(article);
         }
+    }
+
+    static private String stripXMLentities(String text){
+        return text.replace("&lt;", "<")
+                   .replace("&gt;", ">")
+                   .replace("&amp;", "&")
+                   .replace("&apos;", "'")
+                   .replace("&quot;", "\"")
+                   .replace("&#3;", ""); // end of text character
     }
 }
