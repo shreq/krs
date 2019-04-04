@@ -12,8 +12,8 @@ public class NGram implements Similarity {
     }
 
     protected int countMatchingNGrams(String a, String b){
-        int maxI = a.length() - n;
-        int maxJ = b.length() - n;
+        int maxI = a.length() - n + 1;
+        int maxJ = b.length() - n + 1;
         int count = 0;
         for(int i=0; i<maxI; i++){
             String nGram = a.substring(i, i+n);

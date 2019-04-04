@@ -3,6 +3,7 @@ package KSR1.Statistics;
 import KSR1.Article;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DocumentCollectionStats {
 
@@ -17,19 +18,21 @@ public class DocumentCollectionStats {
         }
     }
 
-    public static TreeMap<String, Double> inverseDocumentFrequency(List<Article> articles){
-        return inverseDocumentFrequency(articles, Integer.MAX_VALUE);
+    public static Map<String, Double> inverseDocumentFrequency(List<Article> articles){
+        return inverseDocumentFrequencySoft(articles, new StringComparator());
     }
 
-    public static TreeMap<String, Double> inverseDocumentFrequency(List<Article> articles, int results){
+    public static Map<String, Double> inverseDocumentFrequency(List<Article> articles, int results){
         return inverseDocumentFrequencySoft(articles, new StringComparator(), results);
     }
 
-    public static TreeMap<String, Double> inverseDocumentFrequencySoft(List<Article> articles, WordComparator comparator){
-        return inverseDocumentFrequencySoft(articles, comparator, Integer.MAX_VALUE);
-    }
-
-    public static TreeMap<String, Double> inverseDocumentFrequencySoft(List<Article> articles, WordComparator comparator, int results){
+    /**
+     * Inverse document frequency, where word equality is custom defined.
+     * @param articles list of articles
+     * @param comparator comparator two use when checking equality of words
+     * @return map where values are IDF for each group of words equal to key
+     */
+    public static Map<String, Double> inverseDocumentFrequencySoft(List<Article> articles, WordComparator comparator){
         TreeMap<String, Double> counter = new TreeMap<>(comparator);
         int documentCount = 0;
         for(Article article : articles){
@@ -47,20 +50,33 @@ public class DocumentCollectionStats {
         return counter;
     }
 
-    public static TreeMap<String, Double> termFrequency(List<Article> articles){
-        return termFrequency(articles, Integer.MAX_VALUE);
+    /**
+     * Inverse document frequency, where word equality is custom defined. Only {@code results} best results are returned.
+     * @param articles list of articles
+     * @param comparator comparator two use when checking equality of words
+     * @param results numbers of results with
+     * @return map where values are IDF for each group of words equal to key
+     */
+    public static Map<String, Double> inverseDocumentFrequencySoft(List<Article> articles, WordComparator comparator, int results){
+        return getNGreatestMapValues(articles, comparator, results);
     }
 
-    public static TreeMap<String, Double> termFrequency(List<Article> articles, int results){
+    public static Map<String, Double> termFrequency(List<Article> articles){
+        return termFrequencySoft(articles, new StringComparator());
+    }
+
+    public static Map<String, Double> termFrequency(List<Article> articles, int results){
         return termFrequencySoft(articles, new StringComparator(), results);
     }
 
-    public static TreeMap<String, Double> termFrequencySoft(List<Article> articles, WordComparator comparator){
-        return termFrequencySoft(articles, comparator, Integer.MAX_VALUE);
-    }
-
-    public static TreeMap<String, Double> termFrequencySoft(List<Article> articles, WordComparator comparator, int results){
-        TreeMap<String, Double> counter = new TreeMap<>(comparator);
+    /**
+     * Term frequency, where word equality is custom defined.
+     * @param articles list of articles
+     * @param comparator comparator two use when checking equality of words
+     * @return map where values are TF for each group of words equal to key
+     */
+    public static Map<String, Double> termFrequencySoft(List<Article> articles, WordComparator comparator){
+        Map<String, Double> counter = new TreeMap<>(comparator);
         int wordCount = 0;
         for(Article article : articles){
             for(String word : article.getWords()){
@@ -74,4 +90,31 @@ public class DocumentCollectionStats {
         }
         return counter;
     }
+
+    /**
+     * Term frequency, where word equality is custom defined.  Only {@code results} best results are returned.
+     * @param articles list of articles
+     * @param comparator comparator two use when checking equality of words
+     * @return map where values are TF for each group of words equal to key
+     */
+    public static Map<String, Double> termFrequencySoft(List<Article> articles, WordComparator comparator, int results){
+        return getNGreatestMapValues(articles, comparator, results);
+    }
+
+    private static Map<String, Double> getNGreatestMapValues(List<Article> articles, WordComparator comparator, int results) {
+        Map<String, Double> tfs = inverseDocumentFrequencySoft(articles, comparator, results);
+        SortedSet<Map.Entry<String, Double>> sortedTfs = new TreeSet<>(Comparator.comparing(Map.Entry::getValue));
+        sortedTfs.addAll(tfs.entrySet());
+        final Map<String, Double> result = sortedTfs.stream().skip(sortedTfs.size() - results).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        return result;
+    }
+
+
+
+    /*
+
+    1R
+    https://pdfs.semanticscholar.org/03af/c233b07d0fdfbab169fae5dfd44e7e0fc1b9.pdf
+
+     */
 }
