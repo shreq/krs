@@ -3,9 +3,7 @@ package KSR1;
 import KSR1.Preprocessing.LancasterStemmer;
 import KSR1.Preprocessing.Stemmer;
 import KSR1.Preprocessing.StopWordFilter;
-import KSR1.Processing.GenBoundNGram;
-import KSR1.Processing.NGram;
-import KSR1.Processing.Similarity;
+import KSR1.Processing.*;
 
 import java.io.*;
 import java.sql.SQLOutput;
@@ -39,9 +37,9 @@ public class App {
 
         System.out.println("\nSimilarity test:");
         String wordA = "PROGRAMMER", wordB = "PROGRAMMING";
-        Similarity comparator = new NGram(3);
-        System.out.println("n-gram, n=3: " + comparator.compare(wordA, wordB));
-        comparator = new GenBoundNGram(2, 5);
-        System.out.println("generalized bound n-gram, n=[2..5]: " + comparator.compare(wordA, wordB));
+        Similarity similarity = new NGram(3);
+        System.out.println("n-gram, n=3: " + similarity.compare(wordA, wordB));
+        similarity = new GenBoundNGram(2, 5);
+        System.out.println("generalized bound n-gram, n=[2..5]: " + similarity.compare(wordA, wordB));
     }
 }
