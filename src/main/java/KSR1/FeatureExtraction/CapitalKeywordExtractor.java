@@ -1,6 +1,8 @@
 package KSR1.FeatureExtraction;
 
 import KSR1.Article;
+import KSR1.Statistics.CaseComparator;
+import KSR1.Statistics.DocumentCollectionStats;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,8 +12,14 @@ import java.util.List;
  */
 public class CapitalKeywordExtractor implements FeatureExtractor {
 
+    private List<Article> articles;
+
+    public CapitalKeywordExtractor(List<Article> articles) {
+        this.articles = articles;
+    }
+
     @Override
-    public List<Double> extract(Article article) {      // TODO: implement
+    public List<Double> extract(Article article) {
         ArrayList<Double> result = new ArrayList<>();
 
         int appearances = 0;
@@ -22,8 +30,7 @@ public class CapitalKeywordExtractor implements FeatureExtractor {
             }
         }
 
-        //idf of all words starting with capital letter?
-        //result.add(((double) appearances / (double) words.size()) * ExtractionDB.getInstance().getIdf(word));
+        result.add(((double) appearances / (double) words.size()) * DocumentCollectionStats.inverseDocumentFrequencySoft(articles, new CaseComparator()).get("upper"));
 
         return result;
     }

@@ -32,6 +32,32 @@ public class DocumentCollectionStats {
      * @param comparator comparator two use when checking equality of words
      * @return map where values are IDF for each group of words equal to key
      */
+    public static Map<String, Double> inverseDocumentFrequencySoft(List<Article> articles, CaseComparator comparator) {
+        TreeMap<String, Double> counter = new TreeMap<>(comparator);
+        int documentCount = 0;
+        for (Article article : articles) {
+            documentCount++;
+
+            for (String word : article.getWords()) {
+                String letterCase = word.toUpperCase().charAt(0) == word.charAt(0) ? "upper" : "lower";
+                double count = counter.getOrDefault(letterCase, 0.);
+                count = Double.min(count + 1, documentCount);
+                counter.put(letterCase, count);
+            }
+        }
+
+        for (Map.Entry<String, Double> wordCount : counter.entrySet()) {
+            counter.replace(wordCount.getKey(), Math.log(documentCount / wordCount.getValue()));
+        }
+        return counter;
+    }
+
+    /**
+     * Inverse document frequency, where word equality is custom defined.
+     * @param articles list of articles
+     * @param comparator comparator two use when checking equality of words
+     * @return map where values are IDF for each group of words equal to key
+     */
     public static Map<String, Double> inverseDocumentFrequencySoft(List<Article> articles, WordComparator comparator){
         TreeMap<String, Double> counter = new TreeMap<>(comparator);
         int documentCount = 0;

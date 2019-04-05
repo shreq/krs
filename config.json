@@ -1,0 +1,21 @@
+{
+  "data": {
+    "trainingPercent": 40
+  },
+  "training": {
+    "keywordsCount": 20,
+    "method": "idf|tf|r1"
+  },
+  "features": [
+    "keywords",
+    "capitalLetters",
+    "uniqueWords"
+  ],
+  "equality": {
+    "type": "strict|nGram|genBoundNGram|eDist",
+    "threshold": 0.9
+  },
+  "knnParams": {
+    "k": 5
+  }
+}
