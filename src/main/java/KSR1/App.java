@@ -12,6 +12,8 @@ import java.util.ArrayList;
 public class App {
     public static void main(String[] args)
     {
+        Settings.loadSettings("config.json");
+
         System.out.println("Read articles test:");
         File file = new File("src/main/resources/reuters/reut2-000.sgm");
 
