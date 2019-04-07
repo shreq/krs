@@ -1,5 +1,8 @@
 package KSR1;
 
+import KSR1.Preprocessing.Stemmer;
+import KSR1.Preprocessing.StopWordFilter;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -26,6 +29,20 @@ public class DocumentCollection {
                 throw ex;
             }
             articles.addAll(sgm.articles);
+        }
+    }
+
+    public void preprocess(Stemmer stemmer){
+        for (int i=0; i<articles.size(); i++){
+            ArrayList<String> wordlist = new ArrayList<>();
+            Article article = articles.get(i);
+            for (String word : article.getWords()){
+                if(!StopWordFilter.isValidWord(word)){
+                    wordlist.add(stemmer.stem(word));
+                }
+            }
+            article.setWordlist(wordlist);
+            articles.add(i, article);
         }
     }
 }

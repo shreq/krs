@@ -65,7 +65,7 @@ public class SGMFile {
                 if (matchResult.groupCount() < 1) {
                     continue;
                 }
-                article.text = stripXMLentities(matchResult.group(1));
+                article.setText(stripXMLentities(matchResult.group(1)));
                 // endregion
                 result.articles.add(article);
             } catch (IllegalStateException ex){

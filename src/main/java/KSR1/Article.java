@@ -6,14 +6,18 @@ import java.util.List;
 
 public class Article {
     String title;
-    String text;
+    private String text;
     List<String> topics = new ArrayList<String>();
     List<String> places = new ArrayList<String>();
+    private ArrayList<String> wordlist = null;
     /**
      * Get all words from text. First word in sentence is converted to lower case.
      * @return list of words
      */
     public ArrayList<String> getWords(){
+        if(wordlist != null){
+            return wordlist;
+        }
         ArrayList<String> textArray = new ArrayList<>(Arrays.asList(text.split(",?\\s+|,")));
         String previous = textArray.get(0);
         textArray.set(0, stripRight(previous.toLowerCase()));
@@ -27,6 +31,7 @@ public class Article {
             previous = current;
         }
         textArray.removeIf(this::isNumeric);
+        wordlist = textArray;
         return textArray;
     }
 
@@ -64,5 +69,14 @@ public class Article {
 
     public List<String> getPlaces() {
         return places;
+    }
+
+    public void setText(String text){
+        this.text = text;
+    }
+
+    public void setWordlist(ArrayList<String> wordlist) {
+        this.wordlist = wordlist;
+        this.text = null;
     }
 }

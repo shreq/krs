@@ -7,6 +7,7 @@ import org.json.simple.parser.ParseException;
 import javax.naming.ConfigurationException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.rmi.MarshalException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -16,23 +17,25 @@ public class Settings {
     private static final Logger LOGGER = Logger.getLogger( Settings.class.getName() );
 
     // data
-    static double trainingPercent;
+    double trainingPercent;
 
     // training
-    static int keywordsCount;
-    static String method;
+    int keywordsCount;
+    Method trainingMethod;
 
     // features
-    static ArrayList<String> features;
+    ArrayList<String> features;
 
     // equality
-    static Equality type;
-    static double threshold;
+    Equality equalityType;
+    double threshold;
 
     // knnParams
-    static int k;
+    int k;
+    Metric distanceMetric;
 
-    public static void loadSettings(String filepath) throws IOException, ParseException, ConfigurationException {
+    public static Settings loadSettings(String filepath) throws IOException, ParseException, ConfigurationException {
+        Settings result = new Settings();
         JSONObject mapper = null;
         try {
             FileReader fileReader = new FileReader(filepath);
@@ -45,53 +48,52 @@ public class Settings {
         JSONObject data = (JSONObject) mapper.get("data");
         if(data == null || !data.containsKey("trainingPercent")){
             LOGGER.log(Level.INFO, "No data.trainingPercent found - setting to default value: 40");
-            trainingPercent = 40;
+            result.trainingPercent = 40;
         }else{
-            trainingPercent = Double.parseDouble(data.get("trainingPercent").toString());
+            result.trainingPercent = Double.parseDouble(data.get("trainingPercent").toString());
         }
 
         JSONObject training = (JSONObject) mapper.get("training");
         if(training == null || !training.containsKey("keywordsCount")){
             LOGGER.log(Level.INFO, "No training.keywordsCount found - setting to default value: 20");
-            keywordsCount = 20;
+            result.keywordsCount = 20;
         }else{
             if(training.get("keywordsCount").equals("MAX")){
-                keywordsCount = Integer.MAX_VALUE;
+                result.keywordsCount = Integer.MAX_VALUE;
             }else{
-                keywordsCount = Integer.parseInt(training.get("keywordsCount").toString());
+                result.keywordsCount = Integer.parseInt(training.get("keywordsCount").toString());
             }
         }
         if(training == null || !training.containsKey("method")){
-            LOGGER.log(Level.INFO, "No training.method found - setting to default value: tf-idf");
-            method = "tf-idf";
+            LOGGER.log(Level.INFO, "No training.trainingMethod found - setting to default value: tf-idf");
+            result.trainingMethod = Method.IDF;
         }else{
-            method = training.get("method").toString();
+            result.trainingMethod = methodFromString(training.get("method").toString());
         }
 
-        Settings.features = new ArrayList<>();
+        result.features = new ArrayList<>();
         JSONArray features = (JSONArray) mapper.get("features");
         if(features != null && !features.isEmpty()){
             for(Object value : features){
-                Settings.features.add((String) value);
+                result.features.add((String) value);
             }
         }else{
             LOGGER.log(Level.INFO, "No features found - setting to default value: [keywords]");
-            Settings.features.add("keywords");
+            result.features.add("keywords");
         }
 
         JSONObject equality = (JSONObject) mapper.get("equality");
-        if(equality == null || !equality.containsKey("type")){
-            LOGGER.log(Level.INFO, "No equality.type found - setting to default value: strict");
-            type = Equality.Strict;
+        if(equality == null || !equality.containsKey("equalityType")){
+            LOGGER.log(Level.INFO, "No equality.equalityType found - setting to default value: strict");
+            result.equalityType = Equality.Strict;
         }else{
-            type = fromString(equality.get("type").toString());
+            result.equalityType = equalityFromString(equality.get("equalityType").toString());
         }
-        if(!type.equals(Equality.Strict) && !equality.containsKey("threshold")){
-            LOGGER.info(equality.toJSONString());
+        if(!result.equalityType.equals(Equality.Strict) && !equality.containsKey("threshold")){
             LOGGER.log(Level.SEVERE, "No equality.threshold found");
             throw new ConfigurationException("No equality.threshold parameter");
         }else{
-            threshold = Double.parseDouble(equality.get("threshold").toString());
+            result.threshold = Double.parseDouble(equality.get("threshold").toString());
         }
 
         JSONObject knnParams = (JSONObject) mapper.get("knnParams");
@@ -99,8 +101,15 @@ public class Settings {
             LOGGER.log(Level.SEVERE, "No knnParams.k found");
             throw new ConfigurationException("No knnParams.k parameter");
         }else{
-            k = Integer.parseInt(knnParams.get("k").toString());
+            result.k = Integer.parseInt(knnParams.get("k").toString());
         }
+        if(!knnParams.containsKey("distanceMetric")){
+            LOGGER.log(Level.INFO, "No knnParams.distanceMetric found - setting to default value: manhattan");
+            result.distanceMetric = Metric.Manhattan;
+        }else{
+            result.distanceMetric = metricFromString(knnParams.get("distanceMetric").toString());
+        }
+        return result;
     }
 
     enum Equality{
@@ -109,7 +118,8 @@ public class Settings {
         GenBoundNGram,
         EDist
     }
-    private static Equality fromString(String str){
+
+    private static Equality equalityFromString(String str){
         switch (str){
             case "strict":
                 return Equality.Strict;
@@ -136,6 +146,45 @@ public class Settings {
                 return "eDist";
             default:
                 return "";
+        }
+    }
+
+    enum Method{
+        IDF,
+        TF,
+        ROne,
+    }
+
+    private static Method methodFromString(String str){
+        switch (str){
+            case "idf":
+                return Method.IDF;
+            case "tf":
+                return Method.TF;
+            case "r1":
+            case "r-one":
+                return Method.ROne;
+            default:
+                throw new IllegalArgumentException("Invalid equality equalityType");
+        }
+    }
+
+    enum Metric{
+        Manhattan,
+        Chebyshev,
+        Euclidean
+    }
+
+    private static Metric metricFromString(String str){
+        switch (str.toLowerCase()){
+            case "manhattan":
+                return Metric.Manhattan;
+            case "chebyshev":
+                return Metric.Chebyshev;
+            case "euclidean":
+                return Metric.Euclidean;
+            default:
+                throw new IllegalArgumentException("Invalid equality distanceMetric");
         }
     }
 }

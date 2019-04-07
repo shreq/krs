@@ -10,7 +10,6 @@ import java.util.LinkedList;
 public class LancasterStemmer implements Stemmer {
     @Override
     public String stem(String word) {
-        word = word.toLowerCase();
         boolean isIntact = true;
         boolean continueFlag = true;
         while(continueFlag){
@@ -49,7 +48,7 @@ public class LancasterStemmer implements Stemmer {
     }
 
     private boolean hasVowelAt(String word, int index){
-        final String vowels = "aeiouy";
+        final String vowels = "aeiouyAEIOUY";
         return vowels.contains(word.substring(index, index+1));
     }
 
