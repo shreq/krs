@@ -1,5 +1,13 @@
 package KSR1;
 
+import KSR1.FeatureExtraction.*;
+import KSR1.Preprocessing.LancasterStemmer;
+import KSR1.Processing.EditDistance;
+import KSR1.Processing.GenBoundNGram;
+import KSR1.Processing.NGram;
+import KSR1.Statistics.DocumentCollectionStats;
+import KSR1.Statistics.WordComparator;
+import javafx.util.Pair;
 import org.json.simple.parser.ParseException;
 
 import javax.naming.ConfigurationException;
@@ -7,18 +15,16 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.*;
 
-
 public class App {
 
     private static final Logger LOGGER = Logger.getLogger("Main");
 
     public static void main(String[] args)
     {
-        Logger logger = Logger.getGlobal();
-        logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
-        logger.setLevel(Level.ALL);
+        initLogger();
+        Settings settings = null;
         try {
-            Settings.loadSettings("config.json");
+            settings = Settings.loadSettings("config.json");
         } catch (IOException | ParseException | ConfigurationException e) {
             System.exit(EXIT_CONFIG);
         }
@@ -32,15 +38,106 @@ public class App {
         }
         LOGGER.log(Level.INFO, "Loaded {0} articles", collection.articles.size());
 
+        collection.preprocess(new LancasterStemmer());
+
         ArrayList<Article> learnArticles;
         ArrayList<Article> testArticles;
 
         List<ArrayList<Article>> divideResult;
-        divideResult = divideData(collection.articles, Settings.trainingPercent);
+        divideResult = divideData(collection.articles, settings.trainingPercent);
         learnArticles = divideResult.get(0);
         testArticles = divideResult.get(0);
 
-        // TODO: learn
+        Set<String> keywords = makeKeywords(settings, learnArticles);
+        FeatureExtractor extractor = makeExtractor(settings, keywords, learnArticles);
+
+        // TODO: now we have extractor, time to classify
+    }
+
+    private static FeatureExtractor makeExtractor(Settings settings, Set<String> keywords, ArrayList<Article> articles) {
+        ArrayList<FeatureExtractor> extractors = new ArrayList<>();
+        for(String feature : settings.features){
+            switch (feature){
+                case "keywords":
+                    extractors.add(new KeywordExtractor(keywords));
+                    break;
+                case "capitalLetters":
+                    extractors.add(new CapitalKeywordExtractor(articles));
+                    break;
+                case "uniqueWords":
+                    extractors.add(new UniqueWordsExtractor());
+                    break;
+            }
+        }
+        return new CombinedExtractor(extractors);
+    }
+
+    private static Set<String> makeKeywords(Settings settings, ArrayList<Article> articles){
+        WordComparator comparator = makeComparator(settings);
+        switch (settings.trainingMethod){
+            case TF: {
+                Map<String, Double> tfs = DocumentCollectionStats.termFrequencySoft(articles, comparator);
+                if (settings.keywordsCount == Integer.MAX_VALUE) {
+                    return tfs.keySet();
+                }
+                // sorted in order from smallest to greates term frequency
+                SortedSet<Map.Entry<String, Double>> sortedTfs;
+                sortedTfs = new TreeSet<>(Comparator.comparing(Map.Entry::getValue));
+                sortedTfs.addAll(tfs.entrySet());
+                // get first N results
+                Set<String> result = new HashSet<>();
+                int counter = 0;
+                for (Map.Entry<String, Double> entry : sortedTfs) {
+                    result.add(entry.getKey());
+                    counter++;
+                }
+                return result;
+            }
+            case IDF: {
+                Map<String, Double> idfs = DocumentCollectionStats.inverseDocumentFrequencySoft(articles, comparator);
+                if (settings.keywordsCount == Integer.MAX_VALUE) {
+                    return idfs.keySet();
+                }
+                // sorted in order from greates to smallest inverse document frequency
+                SortedSet<Map.Entry<String, Double>> sortedIdfs;
+                sortedIdfs = new TreeSet<>(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()));
+                sortedIdfs.addAll(idfs.entrySet());
+                // get first N results
+                Set<String> result = new HashSet<>();
+                int counter = 0;
+                for (Map.Entry<String, Double> entry : sortedIdfs) {
+                    result.add(entry.getKey());
+                    counter++;
+                }
+                return result;
+            }
+            case ROne: {
+                //ExtractionDB.initDB(articles, comparator);
+                throw new RuntimeException("i will implement it in a moment");
+            }
+
+        }
+        return null;
+    }
+
+    private static WordComparator makeComparator(Settings settings){
+        switch (settings.equalityType){
+            case NGram:
+                return new WordComparator(new NGram(3), settings.threshold);
+            case EDist:
+                return new WordComparator(new EditDistance(), settings.threshold);
+            case GenBoundNGram:
+                return new WordComparator(new GenBoundNGram(2, 5), settings.threshold);
+            case Strict:
+            default:
+                return new DocumentCollectionStats.StringComparator();
+        }
+    }
+
+    private static void initLogger(){
+        Logger logger = Logger.getGlobal();
+        logger.addHandler(new StreamHandler(System.out, new SimpleFormatter()));
+        logger.setLevel(Level.ALL);
     }
 
     private static List<ArrayList<Article>> divideData(ArrayList<Article> articles, double trainingPercent){

@@ -6,8 +6,8 @@ import java.util.*;
 
 public class DocumentCollectionStats {
 
-    private static class StringComparator extends WordComparator{
-        StringComparator() {
+    public static class StringComparator extends WordComparator{
+        public StringComparator() {
             super(null, 0);
         }
 

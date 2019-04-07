@@ -8,9 +8,9 @@ import java.util.function.BiPredicate;
 public class WordComparator implements BiPredicate<String, String>, Comparator<String> {
 
     private Similarity similarityMeasure;
-    private int threshold;
+    private double threshold;
 
-    WordComparator(Similarity similarityMeasure, int threshold){
+    public WordComparator(Similarity similarityMeasure, double threshold){
         this.similarityMeasure = similarityMeasure;
         this.threshold = threshold;
     }

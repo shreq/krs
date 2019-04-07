@@ -4,7 +4,7 @@
   },
   "training": {
     "keywordsCount": 20,
-    "method": "idf|tf|r1"
+    "method": "idf"
   },
   "features": [
     "keywords",
@@ -12,10 +12,11 @@
     "uniqueWords"
   ],
   "equality": {
-    "type": "strict|nGram|genBoundNGram|eDist",
+    "type": "strict",
     "threshold": 0.9
   },
   "knnParams": {
-    "k": 5
+    "k": 5,
+    "distanceMetric": "manhattan"
   }
 }
