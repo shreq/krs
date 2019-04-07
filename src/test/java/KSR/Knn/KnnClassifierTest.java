@@ -2,7 +2,7 @@ package KSR.Knn;
 
 import KSR1.Knn.ClassificationObject;
 import KSR1.Knn.KnnClassifier;
-import KSR1.Processing.EditDistance;
+import org.apache.commons.math3.ml.distance.ChebyshevDistance;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -24,7 +24,7 @@ public class KnnClassifierTest {
         ClassificationObject co = new ClassificationObject("b", c);
         ClassificationObject xo = new ClassificationObject(x);
 
-        KnnClassifier classifier = new KnnClassifier(2, List.of(ao, bo, co), new EditDistance());
+        KnnClassifier classifier = new KnnClassifier(2, List.of(ao, bo, co), new ChebyshevDistance());
 
         String result = classifier.classifyObject(xo);
         assertThat(result).isEqualTo("a");
