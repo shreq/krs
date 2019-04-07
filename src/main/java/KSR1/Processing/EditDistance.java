@@ -1,9 +1,9 @@
 package KSR1.Processing;
 
 /**
- * Edit distance, also known as Levenshtein distance
+ * Similarity based on edit distance, also known as Levenshtein distance, which is rescaled to [0, 1] range
  */
-public class EditDistance implements Distance {
+public class EditDistance implements Similarity {
 
     @Override
     public double compare(String a, String b) {
@@ -24,6 +24,6 @@ public class EditDistance implements Distance {
                 }
             }
         }
-        return d[lA-1][lB-1];
+        return 1. - ((double) d[lA-1][lB-1] / (Integer.max(lA, lB) - 1));
     }
 }

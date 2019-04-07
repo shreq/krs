@@ -6,7 +6,7 @@ import java.util.function.BiPredicate;
 public class CaseComparator implements BiPredicate<String, String>, Comparator<String> {
 
     /**
-     * Test if strings are similar to certain extent specified by threshold
+     * Test if beginning of words is of the same case
      * @param word1 term to compare
      * @param word2 term to compare
      * @return true if both words starts with upper or lower case letters

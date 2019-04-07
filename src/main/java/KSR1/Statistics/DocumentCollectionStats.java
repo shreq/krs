@@ -3,7 +3,6 @@ package KSR1.Statistics;
 import KSR1.Article;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DocumentCollectionStats {
 
@@ -20,10 +19,6 @@ public class DocumentCollectionStats {
 
     public static Map<String, Double> inverseDocumentFrequency(List<Article> articles){
         return inverseDocumentFrequencySoft(articles, new StringComparator());
-    }
-
-    public static Map<String, Double> inverseDocumentFrequency(List<Article> articles, int results){
-        return inverseDocumentFrequencySoft(articles, new StringComparator(), results);
     }
 
     /**
@@ -76,23 +71,8 @@ public class DocumentCollectionStats {
         return counter;
     }
 
-    /**
-     * Inverse document frequency, where word equality is custom defined. Only {@code results} best results are returned.
-     * @param articles list of articles
-     * @param comparator comparator two use when checking equality of words
-     * @param results numbers of results with
-     * @return map where values are IDF for each group of words equal to key
-     */
-    public static Map<String, Double> inverseDocumentFrequencySoft(List<Article> articles, WordComparator comparator, int results){
-        return getNGreatestMapValues(articles, comparator, results);
-    }
-
     public static Map<String, Double> termFrequency(List<Article> articles){
         return termFrequencySoft(articles, new StringComparator());
-    }
-
-    public static Map<String, Double> termFrequency(List<Article> articles, int results){
-        return termFrequencySoft(articles, new StringComparator(), results);
     }
 
     /**
@@ -116,26 +96,6 @@ public class DocumentCollectionStats {
         }
         return counter;
     }
-
-    /**
-     * Term frequency, where word equality is custom defined.  Only {@code results} best results are returned.
-     * @param articles list of articles
-     * @param comparator comparator two use when checking equality of words
-     * @return map where values are TF for each group of words equal to key
-     */
-    public static Map<String, Double> termFrequencySoft(List<Article> articles, WordComparator comparator, int results){
-        return getNGreatestMapValues(articles, comparator, results);
-    }
-
-    private static Map<String, Double> getNGreatestMapValues(List<Article> articles, WordComparator comparator, int results) {
-        Map<String, Double> tfs = inverseDocumentFrequencySoft(articles, comparator, results);
-        SortedSet<Map.Entry<String, Double>> sortedTfs = new TreeSet<>(Comparator.comparing(Map.Entry::getValue));
-        sortedTfs.addAll(tfs.entrySet());
-        final Map<String, Double> result = sortedTfs.stream().skip(sortedTfs.size() - results).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        return result;
-    }
-
-
 
     /*
 

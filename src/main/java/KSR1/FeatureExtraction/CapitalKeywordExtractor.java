@@ -25,7 +25,7 @@ public class CapitalKeywordExtractor implements FeatureExtractor {
         int appearances = 0;
         ArrayList<String> words = article.getWords();
         for (String word : words) {
-            if (word.toUpperCase().charAt(0) == word.charAt(0)) {
+            if (word.charAt(0) <= 'Z' && word.charAt(0) >= 'A') {
                 appearances++;
             }
         }
