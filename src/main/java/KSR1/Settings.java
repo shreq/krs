@@ -4,59 +4,138 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.*;
 import org.json.simple.parser.ParseException;
 
+import javax.naming.ConfigurationException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Settings {
+
+    private static final Logger LOGGER = Logger.getLogger( Settings.class.getName() );
 
     // data
     static double trainingPercent;
 
     // training
-    static double keywordsCount;
+    static int keywordsCount;
     static String method;
 
     // features
-    static ArrayList<String> keywords;
-    static ArrayList<String> capitalLetters;
-    static ArrayList<String> uniqueWords;
+    static ArrayList<String> features;
 
     // equality
-    static String type;
+    static Equality type;
     static double threshold;
 
     // knnParams
-    static double k;
+    static int k;
 
-    public static void loadSettings(String filepath) {
-        Map<String, Map<String, Object>> mapper = null;
+    public static void loadSettings(String filepath) throws IOException, ParseException, ConfigurationException {
+        JSONObject mapper = null;
         try {
-            mapper = (JSONObject) new JSONParser().parse(new FileReader(filepath));
-        } catch (IOException | ParseException e) {
-            e.printStackTrace();
+            FileReader fileReader = new FileReader(filepath);
+            mapper = (JSONObject) new JSONParser().parse(fileReader);
+        } catch (IOException | ParseException ex) {
+            LOGGER.log(Level.CONFIG, ex.toString());
+            throw ex;
         }
 
-        //Map<String, Map<String, Object>> mapper = parser;
-
-        trainingPercent = Double.parseDouble(mapper.get("data").getOrDefault("trainingPercent", "40").toString());
-        keywordsCount = Double.parseDouble(mapper.get("training").getOrDefault("keywordsCount", "20").toString());
-        method = mapper.get("training").getOrDefault("method", "idf|tf|r1").toString();
-
-        // TODO: fix it
-        /*for (Object o : (ArrayList) mapper.get("features").get("keywords")) {
-            keywords.add(o.toString());
+        JSONObject data = (JSONObject) mapper.get("data");
+        if(data == null || !data.containsKey("trainingPercent")){
+            LOGGER.log(Level.INFO, "No data.trainingPercent found - setting to default value: 40");
+            trainingPercent = 40;
+        }else{
+            trainingPercent = Double.parseDouble(data.get("trainingPercent").toString());
         }
-        for (Object o : (ArrayList) mapper.get("features").get("capitalLetters")) {
-            capitalLetters.add(o.toString());
-        }
-        for (Object o : (ArrayList) mapper.get("features").get("uniqueWords")) {
-            uniqueWords.add(o.toString());
-        }*/
 
-        type = mapper.get("equality").getOrDefault("type", "strict|nGram|genBoundNGram|eDist").toString();
-        threshold = Double.parseDouble(mapper.get("equality").getOrDefault("threshold", "0.9").toString());
-        k = Double.parseDouble(mapper.get("knnParams").getOrDefault("k", "5").toString());
+        JSONObject training = (JSONObject) mapper.get("training");
+        if(training == null || !training.containsKey("keywordsCount")){
+            LOGGER.log(Level.INFO, "No training.keywordsCount found - setting to default value: 20");
+            keywordsCount = 20;
+        }else{
+            if(training.get("keywordsCount").equals("MAX")){
+                keywordsCount = Integer.MAX_VALUE;
+            }else{
+                keywordsCount = Integer.parseInt(training.get("keywordsCount").toString());
+            }
+        }
+        if(training == null || !training.containsKey("method")){
+            LOGGER.log(Level.INFO, "No training.method found - setting to default value: tf-idf");
+            method = "tf-idf";
+        }else{
+            method = training.get("method").toString();
+        }
+
+        Settings.features = new ArrayList<>();
+        JSONArray features = (JSONArray) mapper.get("features");
+        if(features != null && !features.isEmpty()){
+            for(Object value : features){
+                Settings.features.add((String) value);
+            }
+        }else{
+            LOGGER.log(Level.INFO, "No features found - setting to default value: [keywords]");
+            Settings.features.add("keywords");
+        }
+
+        JSONObject equality = (JSONObject) mapper.get("equality");
+        if(equality == null || !equality.containsKey("type")){
+            LOGGER.log(Level.INFO, "No equality.type found - setting to default value: strict");
+            type = Equality.Strict;
+        }else{
+            type = fromString(equality.get("type").toString());
+        }
+        if(!type.equals(Equality.Strict) && !equality.containsKey("threshold")){
+            LOGGER.info(equality.toJSONString());
+            LOGGER.log(Level.SEVERE, "No equality.threshold found");
+            throw new ConfigurationException("No equality.threshold parameter");
+        }else{
+            threshold = Double.parseDouble(equality.get("threshold").toString());
+        }
+
+        JSONObject knnParams = (JSONObject) mapper.get("knnParams");
+        if(knnParams == null || !knnParams.containsKey("k")){
+            LOGGER.log(Level.SEVERE, "No knnParams.k found");
+            throw new ConfigurationException("No knnParams.k parameter");
+        }else{
+            k = Integer.parseInt(knnParams.get("k").toString());
+        }
+    }
+
+    enum Equality{
+        Strict,
+        NGram,
+        GenBoundNGram,
+        EDist
+    }
+    private static Equality fromString(String str){
+        switch (str){
+            case "strict":
+                return Equality.Strict;
+            case "nGram":
+                return Equality.NGram;
+            case "genBoundNGram":
+                return Equality.GenBoundNGram;
+            case "eDist":
+                return Equality.EDist;
+            default:
+                throw new IllegalArgumentException("Invalid equality type");
+        }
+    }
+
+    private static String toString(Equality eq){
+        switch (eq){
+            case Strict:
+                return "strict";
+            case NGram:
+                return "nGram";
+            case GenBoundNGram:
+                return "genBoundNGram";
+            case EDist:
+                return "eDist";
+            default:
+                return "";
+        }
     }
 }
