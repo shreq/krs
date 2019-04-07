@@ -1,23 +1,31 @@
 package KSR1;
 
 import KSR1.FeatureExtraction.*;
+import KSR1.Knn.ClassificationObject;
+import KSR1.Knn.KnnClassifier;
 import KSR1.Preprocessing.LancasterStemmer;
 import KSR1.Processing.EditDistance;
 import KSR1.Processing.GenBoundNGram;
 import KSR1.Processing.NGram;
 import KSR1.Statistics.DocumentCollectionStats;
 import KSR1.Statistics.WordComparator;
-import javafx.util.Pair;
+import org.apache.commons.math3.ml.distance.EuclideanDistance;
 import org.json.simple.parser.ParseException;
 
 import javax.naming.ConfigurationException;
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
+import java.util.logging.StreamHandler;
+import java.util.stream.Collectors;
 
 public class App {
 
     private static final Logger LOGGER = Logger.getLogger("Main");
+    private static FeatureExtractor extractor;
 
     public static void main(String[] args)
     {
@@ -49,9 +57,34 @@ public class App {
         testArticles = divideResult.get(0);
 
         Set<String> keywords = makeKeywords(settings, learnArticles);
-        FeatureExtractor extractor = makeExtractor(settings, keywords, learnArticles);
+        extractor = makeExtractor(settings, keywords, learnArticles);
 
         // TODO: now we have extractor, time to classify
+        ArrayList<Article> allArticles = new ArrayList<>();
+        allArticles.addAll(learnArticles);
+        allArticles.addAll(testArticles);
+        List<ClassificationObject> classificationObjects = allArticles.stream()
+                .map(App::mapArticleToClassificationObject).collect(Collectors.toList());
+
+        List<ClassificationObject> learnClassificationObjects = classificationObjects.subList(0, learnArticles.size());
+        List<ClassificationObject> testClassificationObjects = classificationObjects.subList(learnArticles.size(), allArticles.size());
+
+
+    }
+
+    private static void classify(List<ClassificationObject> learnArticles, List<ClassificationObject> testArticles, Settings settings) {
+        KnnClassifier knnClassifier = new KnnClassifier(settings.k, learnArticles, new EuclideanDistance()); // TODO: distance
+
+
+    }
+
+    private static ClassificationObject mapArticleToClassificationObject(Article article) {
+        ClassificationObject classificationObject = new ClassificationObject();
+
+        classificationObject.setLabels(article.getTopics());
+        classificationObject.values = extractor.extract(article);
+
+        return classificationObject;
     }
 
     private static FeatureExtractor makeExtractor(Settings settings, Set<String> keywords, ArrayList<Article> articles) {

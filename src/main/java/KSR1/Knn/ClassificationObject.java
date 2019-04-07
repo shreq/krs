@@ -1,14 +1,17 @@
 package KSR1.Knn;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ClassificationObject {
 
-    private String label;
-    public ArrayList<Double> values;
+    private List<String> labels;
+    public List<Double> values;
 
-    public ClassificationObject(String label, ArrayList<Double> values) {
-        this.label = label;
+    public ClassificationObject() {}
+
+    public ClassificationObject(List<String> labels, ArrayList<Double> values) {
+        this.labels = labels;
         this.values = values;
     }
 
@@ -16,7 +19,11 @@ public class ClassificationObject {
         this.values = values;
     }
 
-    public String getLabel() {
-        return label;
+    public List<String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(List<String> labels) {
+        this.labels = labels;
     }
 }

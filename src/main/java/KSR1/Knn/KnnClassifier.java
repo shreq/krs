@@ -34,7 +34,7 @@ public class KnnClassifier {
 
         Map<String, Long> collector = distances.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue()).map(Map.Entry::getKey)
-                .limit(neighboursCount).map(ClassificationObject::getLabel)
+                .limit(neighboursCount).map(ClassificationObject::getLabels)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
 
         return Collections.max(collector.entrySet(), Map.Entry.comparingByValue()).getKey();
