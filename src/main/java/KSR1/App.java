@@ -1,23 +1,30 @@
 package KSR1;
 
 import KSR1.FeatureExtraction.*;
+import KSR1.Knn.ClassificationObject;
+import KSR1.Knn.KnnClassifier;
 import KSR1.Preprocessing.LancasterStemmer;
 import KSR1.Processing.EditDistance;
 import KSR1.Processing.GenBoundNGram;
 import KSR1.Processing.NGram;
 import KSR1.Statistics.DocumentCollectionStats;
 import KSR1.Statistics.WordComparator;
-import javafx.util.Pair;
+import org.apache.commons.math3.ml.distance.ChebyshevDistance;
+import org.apache.commons.math3.ml.distance.DistanceMeasure;
+import org.apache.commons.math3.ml.distance.EuclideanDistance;
+import org.apache.commons.math3.ml.distance.ManhattanDistance;
 import org.json.simple.parser.ParseException;
 
 import javax.naming.ConfigurationException;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
+import java.util.stream.Collectors;
 
 public class App {
 
     private static final Logger LOGGER = Logger.getLogger("Main");
+    private static FeatureExtractor extractor;
 
     public static void main(String[] args)
     {
@@ -38,6 +45,12 @@ public class App {
         }
         LOGGER.log(Level.INFO, "Loaded {0} articles", collection.articles.size());
 
+        if(settings.category.equals("places")){
+            collection.filterPlaces();
+        }else if(settings.category.equals("orgs")){
+            collection.filterOrgs();
+        }
+        LOGGER.log(Level.INFO, "{0} articles after filtering", collection.articles.size());
         collection.preprocess(new LancasterStemmer());
 
         ArrayList<Article> learnArticles;
@@ -46,12 +59,45 @@ public class App {
         List<ArrayList<Article>> divideResult;
         divideResult = divideData(collection.articles, settings.trainingPercent);
         learnArticles = divideResult.get(0);
-        testArticles = divideResult.get(0);
+        testArticles = divideResult.get(1);
 
         Set<String> keywords = makeKeywords(settings, learnArticles);
-        FeatureExtractor extractor = makeExtractor(settings, keywords, learnArticles);
 
-        // TODO: now we have extractor, time to classify
+        ExtractionDB.initDB(learnArticles);
+        Map<String, Double> p = ExtractionDB.idfs;
+        extractor = makeExtractor(settings, keywords, learnArticles);
+        // TODO: investigate NullPointerExceptions when calling ExtractionDB.getIdf()
+        List<ClassificationObject> referenceClassificationObjects =
+                learnArticles.stream().map(App::mapArticleToClassificationObject).collect(Collectors.toList());
+        KnnClassifier classifier = makeClassifier(settings, referenceClassificationObjects);
+        ExtractionDB.dropDB();
+
+        ExtractionDB.initDB(testArticles);
+        extractor = makeExtractor(settings, keywords, testArticles);
+        LOGGER.info(testArticles.get(0).getPlaces().toString());
+        LOGGER.info(classifier.classifyObject(mapArticleToClassificationObject(testArticles.get(0))));
+        ExtractionDB.dropDB();
+    }
+
+    private static KnnClassifier makeClassifier(Settings settings, List<ClassificationObject> articles){
+        DistanceMeasure distanceMeasure;
+        switch (settings.distanceMetric){
+            case Chebyshev:
+                distanceMeasure = new ChebyshevDistance();
+                break;
+            case Euclidean:
+                distanceMeasure = new EuclideanDistance();
+                break;
+            case Manhattan:
+            default:
+                distanceMeasure = new ManhattanDistance();
+                break;
+        }
+        return new KnnClassifier(settings.k, articles, distanceMeasure);
+    }
+
+    private static ClassificationObject mapArticleToClassificationObject(Article article) {
+        return new ClassificationObject(article.getPlaces().get(0), extractor.extract(article));
     }
 
     private static FeatureExtractor makeExtractor(Settings settings, Set<String> keywords, ArrayList<Article> articles) {
@@ -90,6 +136,9 @@ public class App {
                 for (Map.Entry<String, Double> entry : sortedTfs) {
                     result.add(entry.getKey());
                     counter++;
+                    if(counter == settings.keywordsCount){
+                        break;
+                    }
                 }
                 return result;
             }
@@ -108,12 +157,16 @@ public class App {
                 for (Map.Entry<String, Double> entry : sortedIdfs) {
                     result.add(entry.getKey());
                     counter++;
+                    if(counter == settings.keywordsCount){
+                        break;
+                    }
                 }
                 return result;
             }
             case ROne: {
                 //ExtractionDB.initDB(articles, comparator);
                 throw new RuntimeException("i will implement it in a moment");
+                //ExtractionDB.dropDB();
             }
 
         }
@@ -143,13 +196,16 @@ public class App {
     private static List<ArrayList<Article>> divideData(ArrayList<Article> articles, double trainingPercent){
         ArrayList<Article> learnArticles = new ArrayList<>();
         ArrayList<Article> testArticles = new ArrayList<>();
-        PrimitiveIterator.OfDouble random = new Random().doubles(0, 100).iterator();
+        Collections.shuffle(articles, new Random());
+        int trainingCount = (int) Math.round(articles.size() * trainingPercent / 100);
+        int count = 0;
         for(Article article : articles){
-            if(random.nextDouble() < trainingPercent){
+            if(count < trainingCount){
                 learnArticles.add(article);
             }else {
                 testArticles.add(article);
             }
+            count++;
         }
         return Arrays.asList(learnArticles, testArticles);
     }

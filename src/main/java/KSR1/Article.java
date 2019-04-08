@@ -7,7 +7,7 @@ import java.util.List;
 public class Article {
     String title;
     private String text;
-    List<String> topics = new ArrayList<String>();
+    List<String> orgs = new ArrayList<String>();
     List<String> places = new ArrayList<String>();
     private ArrayList<String> wordlist = null;
     /**
@@ -18,7 +18,7 @@ public class Article {
         if(wordlist != null){
             return wordlist;
         }
-        ArrayList<String> textArray = new ArrayList<>(Arrays.asList(text.split(",?\\s+|,")));
+        ArrayList<String> textArray = new ArrayList<>(Arrays.asList(text.split(",?\\s+|,|/")));
         String previous = textArray.get(0);
         textArray.set(0, stripRight(previous.toLowerCase()));
 
@@ -31,6 +31,7 @@ public class Article {
             previous = current;
         }
         textArray.removeIf(this::isNumeric);
+        textArray.removeIf(String::isEmpty);
         wordlist = textArray;
         return textArray;
     }
@@ -54,17 +55,17 @@ public class Article {
     @Override
     public String toString() {
         return "Article(" +
-                "\n  topics=" + topics.toString() +
-                "\n  places=" + places.toString() +
-                "\n  title=" + title + "\n)";
+                "orgs=" + orgs.toString() +
+                ", places=" + places.toString() +
+                ", title=" + title + ")";
     }
 
     public String getTitle() {
         return title;
     }
 
-    public List<String> getTopics() {
-        return topics;
+    public List<String> getOrgs() {
+        return orgs;
     }
 
     public List<String> getPlaces() {

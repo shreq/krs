@@ -6,6 +6,7 @@ import KSR1.Statistics.WordComparator;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Database of words TFs and IDFs to enable feature extraction per single Article (FeatureExtractor interface) and optimize it.
@@ -41,7 +42,12 @@ public class ExtractionDB {
     }
 
     public double getIdf(String word){
-        return idfs.get(word);
+        try{
+            return idfs.get(word);
+        }catch (NullPointerException e){
+            Logger.getLogger("XD").info(word);
+        }
+        return 0.;
     }
 
     private ExtractionDB(List<Article> articles) {

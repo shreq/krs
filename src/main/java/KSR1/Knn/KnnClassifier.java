@@ -13,7 +13,6 @@ public class KnnClassifier {
 
     int neighboursCount;
     List<ClassificationObject> dataset;
-    // https://commons.apache.org/proper/commons-math/javadocs/api-3.4/org/apache/commons/math3/ml/distance/DistanceMeasure.html
     DistanceMeasure distance = null;
 
     public KnnClassifier(int neighboursCount, List<ClassificationObject> dataset, DistanceMeasure distance) {
@@ -25,14 +24,15 @@ public class KnnClassifier {
     public String classifyObject(ClassificationObject classificationObject) {
         Map<ClassificationObject, Double> distances = new HashMap<>();
 
-        for (ClassificationObject s : dataset) {
+        for (ClassificationObject object : dataset) {
             double distance = this.distance.compute(
                     classificationObject.values.stream().mapToDouble(d -> d).toArray(),
-                    s.values.stream().mapToDouble(d -> d).toArray());
-            distances.put(s, distance);
+                    object.values.stream().mapToDouble(d -> d).toArray());
+            distances.put(object, distance);
         }
 
-        Map<String, Long> collector = distances.entrySet().stream()
+        Map<String, Long> collector =
+                distances.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue()).map(Map.Entry::getKey)
                 .limit(neighboursCount).map(ClassificationObject::getLabel)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
