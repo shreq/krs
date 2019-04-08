@@ -20,7 +20,7 @@ public class CapitalKeywordExtractor implements FeatureExtractor {
     }
 
     @Override
-    public List<Double> extract(Article article) {
+    public ArrayList<Double> extract(Article article) {
         ArrayList<Double> result = new ArrayList<>();
 
         int appearances = 0;

@@ -3,13 +3,11 @@
     "trainingPercent": 40
   },
   "training": {
-    "keywordsCount": 20,
+    "keywordsCount": 5,
     "method": "idf"
   },
   "features": [
-    "keywords",
-    "capitalLetters",
-    "uniqueWords"
+    "keywords"
   ],
   "equality": {
     "type": "strict",
@@ -18,5 +16,6 @@
   "knnParams": {
     "k": 5,
     "distanceMetric": "manhattan"
-  }
+  },
+  "category": "places"
 }

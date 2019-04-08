@@ -3,7 +3,6 @@ package KSR1.FeatureExtraction;
 import KSR1.Article;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -18,7 +17,7 @@ public class WeightedKeywordExtractor implements FeatureExtractor {
     }
 
     @Override
-    public List<Double> extract(Article article) {
+    public ArrayList<Double> extract(Article article) {
         ArrayList<Double> result = new ArrayList<>();
 
         int appearances = 0;

@@ -7,7 +7,6 @@ import org.json.simple.parser.ParseException;
 import javax.naming.ConfigurationException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.rmi.MarshalException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -34,6 +33,8 @@ public class Settings {
     int k;
     Metric distanceMetric;
 
+    String category;
+
     public static Settings loadSettings(String filepath) throws IOException, ParseException, ConfigurationException {
         Settings result = new Settings();
         JSONObject mapper = null;
@@ -47,8 +48,8 @@ public class Settings {
 
         JSONObject data = (JSONObject) mapper.get("data");
         if(data == null || !data.containsKey("trainingPercent")){
-            LOGGER.log(Level.INFO, "No data.trainingPercent found - setting to default value: 40");
-            result.trainingPercent = 40;
+            LOGGER.log(Level.INFO, "No data.trainingPercent found - setting to default value: 60");
+            result.trainingPercent = 60;
         }else{
             result.trainingPercent = Double.parseDouble(data.get("trainingPercent").toString());
         }
@@ -109,6 +110,14 @@ public class Settings {
         }else{
             result.distanceMetric = metricFromString(knnParams.get("distanceMetric").toString());
         }
+
+        if(mapper.containsKey("category")){
+            result.category = mapper.get("category").toString().toLowerCase();
+        }else{
+            LOGGER.log(Level.INFO, "No category found - setting to default value: places");
+            result.category = "places";
+        }
+
         return result;
     }
 

@@ -6,6 +6,8 @@ import KSR1.Preprocessing.StopWordFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,6 +17,12 @@ public class DocumentCollection {
     private static final Logger LOGGER = Logger.getLogger( DocumentCollection.class.getName() );
 
     ArrayList<Article> articles;
+
+    private static final HashSet<String> allowedPlaces =
+            new HashSet<>(Arrays.asList("west-germany", "usa", "france", "uk", "canada", "japan"));
+
+    private static final HashSet<String> allowedOrgs =
+            new HashSet<>(Arrays.asList("ec", "worldbank", "oecd"));
 
     public DocumentCollection(List<String> filePaths) throws FileNotFoundException {
         articles = new ArrayList<>();
@@ -37,12 +45,20 @@ public class DocumentCollection {
             ArrayList<String> wordlist = new ArrayList<>();
             Article article = articles.get(i);
             for (String word : article.getWords()){
-                if(!StopWordFilter.isValidWord(word)){
+                if(StopWordFilter.isValidWord(word)){
                     wordlist.add(stemmer.stem(word));
                 }
             }
             article.setWordlist(wordlist);
-            articles.add(i, article);
+            articles.set(i, article);
         }
+    }
+
+    public void filterPlaces(){
+        articles.removeIf(article -> article.getPlaces().size() != 1 || !allowedPlaces.contains(article.getPlaces().get(0)));
+    }
+
+    public void filterOrgs(){
+        articles.removeIf(article -> article.getOrgs().size() != 1 || !allowedPlaces.contains(article.getOrgs().get(0)));
     }
 }
