@@ -23,7 +23,7 @@ public class CombinedExtractor implements FeatureExtractor {
     }
 
     @Override
-    public List<Double> extract(Article article) {
+    public ArrayList<Double> extract(Article article) {
         ArrayList<Double> result = new ArrayList<>();
         for (FeatureExtractor extractor : extractors) {
             result.addAll(extractor.extract(article));

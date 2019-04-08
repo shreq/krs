@@ -13,7 +13,7 @@ public class StopWordFilter {
      * @return true if word should be filtered out
      */
     public static boolean filter(String word) {
-        return stopWords.contains(word);
+        return stopWords.contains(word.toLowerCase());
     }
 
     /**
@@ -22,7 +22,7 @@ public class StopWordFilter {
      * @return false if word should be filtered out
      */
     public static boolean isValidWord(String word) {
-        return !stopWords.contains(word);
+        return !stopWords.contains(word.toLowerCase());
     }
 
     static final private HashSet<String> stopWords =
@@ -39,5 +39,5 @@ public class StopWordFilter {
                     "through", "during", "before", "after", "above", "below", "to", "from", "up", "down", "in", "out", "on", "off",
                     "over", "under", "again", "further", "then", "once", "here", "there", "when", "where", "why", "how", "all",
                     "any", "both", "each", "few", "more", "most", "other", "some", "such", "no", "nor", "not", "only", "own",
-                    "same", "so", "than", "too", "very"));
+                    "same", "so", "than", "too", "very", "pm", "s", "t", "'s", "'t"));
 }
