@@ -7,7 +7,6 @@ import org.json.simple.parser.ParseException;
 import javax.naming.ConfigurationException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,7 +22,7 @@ public class Settings {
     Method trainingMethod;
 
     // features
-    ArrayList<String> features;
+    SetSimilarity setSimilarity;
 
     // equality
     Equality equalityType;
@@ -33,7 +32,7 @@ public class Settings {
     int k;
     Metric distanceMetric;
 
-    String category;
+    Category category;
 
     public static Settings loadSettings(String filepath) throws IOException, ParseException, ConfigurationException {
         Settings result = new Settings();
@@ -67,20 +66,17 @@ public class Settings {
         }
         if(training == null || !training.containsKey("method")){
             LOGGER.log(Level.INFO, "No training.trainingMethod found - setting to default value: tf-idf");
-            result.trainingMethod = Method.IDF;
+            result.trainingMethod = Method.TFIDF;
         }else{
             result.trainingMethod = methodFromString(training.get("method").toString());
         }
 
-        result.features = new ArrayList<>();
-        JSONArray features = (JSONArray) mapper.get("features");
-        if(features != null && !features.isEmpty()){
-            for(Object value : features){
-                result.features.add((String) value);
-            }
+        JSONObject extraction = (JSONObject) mapper.get("extraction");
+        if(extraction == null || !extraction.containsKey("keywordSetSimilarity")){
+            LOGGER.log(Level.INFO, "No extraction.keywordSetSimilarity found - setting to default value: jaccard");
+            result.setSimilarity = SetSimilarity.Jaccard;
         }else{
-            LOGGER.log(Level.INFO, "No features found - setting to default value: [keywords]");
-            result.features.add("keywords");
+            result.setSimilarity = similarityFromString(extraction.get("keywordSetSimilarity").toString());
         }
 
         JSONObject equality = (JSONObject) mapper.get("equality");
@@ -112,10 +108,10 @@ public class Settings {
         }
 
         if(mapper.containsKey("category")){
-            result.category = mapper.get("category").toString().toLowerCase();
+            result.category = categoryFromString(mapper.get("category").toString());
         }else{
-            LOGGER.log(Level.INFO, "No category found - setting to default value: places");
-            result.category = "places";
+            LOGGER.log(Level.SEVERE, "No category found");
+            throw new ConfigurationException("No category parameter");
         }
 
         return result;
@@ -159,22 +155,22 @@ public class Settings {
     }
 
     enum Method{
-        IDF,
         TF,
-        ROne,
+        TFIDF,
+        ROne
     }
 
     private static Method methodFromString(String str){
         switch (str){
-            case "idf":
-                return Method.IDF;
             case "tf":
                 return Method.TF;
+            case "tfidf":
+                return Method.TFIDF;
             case "r1":
             case "r-one":
                 return Method.ROne;
             default:
-                throw new IllegalArgumentException("Invalid equality equalityType");
+                throw new IllegalArgumentException("Invalid method");
         }
     }
 
@@ -193,7 +189,39 @@ public class Settings {
             case "euclidean":
                 return Metric.Euclidean;
             default:
-                throw new IllegalArgumentException("Invalid equality distanceMetric");
+                throw new IllegalArgumentException("Invalid distanceMetric");
+        }
+    }
+
+    enum Category {
+        Places,
+        Orgs
+    }
+
+    private static Category categoryFromString(String str){
+        switch (str.toLowerCase()){
+            case "places":
+                return Category.Places;
+            case "orgs":
+                return Category.Orgs;
+            default:
+                throw new IllegalArgumentException("Invalid category");
+        }
+    }
+
+    enum SetSimilarity{
+        Jaccard,
+        CosineAmplitude
+    }
+
+    private static SetSimilarity similarityFromString(String str) {
+        switch (str.toLowerCase()){
+            case "jaccard":
+                return SetSimilarity.Jaccard;
+            case "cosineamplitude":
+                return SetSimilarity.CosineAmplitude;
+            default:
+                throw new IllegalArgumentException("Invalid category");
         }
     }
 }
