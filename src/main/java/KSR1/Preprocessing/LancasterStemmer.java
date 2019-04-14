@@ -73,6 +73,8 @@ public class LancasterStemmer implements Stemmer {
     // region stemming rules descriptions
     static final private String[] rulesDescriptions =
             {
+                    "'s*2>",     // 's > - if intact
+                    "n't*3>",    // n't > - if intact
                     "ai*2.",     // -ia > - if intact
                     "a*1.",      // -a > - if intact
                     "bb1.",      // -bb > -b

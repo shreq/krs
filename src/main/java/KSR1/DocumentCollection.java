@@ -18,10 +18,10 @@ public class DocumentCollection {
 
     ArrayList<Article> articles;
 
-    private static final HashSet<String> allowedPlaces =
+    public static final HashSet<String> allowedPlaces =
             new HashSet<>(Arrays.asList("west-germany", "usa", "france", "uk", "canada", "japan"));
 
-    private static final HashSet<String> allowedOrgs =
+    public static final HashSet<String> allowedOrgs =
             new HashSet<>(Arrays.asList("ec", "worldbank", "oecd"));
 
     public DocumentCollection(List<String> filePaths) throws FileNotFoundException {

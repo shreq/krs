@@ -47,5 +47,5 @@ public class StemRule {
      */
     boolean isContinuous;
 
-    private static Pattern ruleValidator = Pattern.compile("^([a-z]+)(\\*?)(\\d)([a-z]*)([>.]?)$");
+    private static final Pattern ruleValidator = Pattern.compile("^([a-z']+)(\\*?)(\\d)([a-z]*)([>.]?)$");
 }

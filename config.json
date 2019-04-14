@@ -1,21 +1,21 @@
 {
   "data": {
-    "trainingPercent": 40
+    "trainingPercent": 70
   },
   "training": {
-    "keywordsCount": 5,
+    "keywordsCount": 40,
     "method": "idf"
   },
   "features": [
     "keywords"
   ],
   "equality": {
-    "type": "strict",
+    "equalityType": "strict",
     "threshold": 0.9
   },
   "knnParams": {
-    "k": 5,
-    "distanceMetric": "manhattan"
+    "k": 15,
+    "distanceMetric": "euclidean"
   },
   "category": "places"
 }
