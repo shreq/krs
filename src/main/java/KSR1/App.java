@@ -270,5 +270,5 @@ public class App {
             "src/main/resources/reuters/reut2-019.sgm",
             "src/main/resources/reuters/reut2-020.sgm",
             "src/main/resources/reuters/reut2-021.sgm"
-        ));
+    ));
 }
