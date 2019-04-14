@@ -6,9 +6,9 @@
     "keywordsCount": 40,
     "method": "idf"
   },
-  "features": [
-    "keywords"
-  ],
+  "extraction": {
+    "keywordSetSimilarity": "jaccard"
+  },
   "equality": {
     "equalityType": "strict",
     "threshold": 0.9

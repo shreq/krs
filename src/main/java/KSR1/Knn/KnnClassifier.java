@@ -27,6 +27,7 @@ public class KnnClassifier {
     }
 
     public String classifyObject(ClassificationObject classificationObject) {
+        // TODO: przeskalować ze względu na ilość obiektów różnych typów, np: 100xClassA i 1xClassB => zawsze przy wzięciu k obiektów jest więcej ClassA
         Map<ClassificationObject, Double> distances = new HashMap<>();
 
         for (ClassificationObject object : dataset) {
