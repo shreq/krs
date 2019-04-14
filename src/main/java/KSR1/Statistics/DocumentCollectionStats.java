@@ -28,16 +28,19 @@ public class DocumentCollectionStats {
      * @return map where values are IDF for each group of words equal to key
      */
     public static Map<String, Double> inverseDocumentFrequencySoft(List<Article> articles, CaseComparator comparator) {
-        TreeMap<String, Double> counter = new TreeMap<>(comparator);
+        TreeMap<String, Double> counter = new TreeMap<>();
+        counter.put("upper", 0.);
+        counter.put("lower", 0.);
         int documentCount = 0;
         for (Article article : articles) {
             documentCount++;
 
             for (String word : article.getWords()) {
-                String letterCase = word.toUpperCase().charAt(0) == word.charAt(0) ? "upper" : "lower";
-                double count = counter.getOrDefault(letterCase, 0.);
-                count = Double.min(count + 1, documentCount);
-                counter.put(letterCase, count);
+                if(word.toUpperCase().charAt(0) == word.charAt(0)){
+                    counter.put("upper", counter.get("upper")+1);
+                }else{
+                    counter.put("lower", counter.get("lower")+1);
+                }
             }
         }
 
@@ -59,6 +62,7 @@ public class DocumentCollectionStats {
         for(Article article : articles){
             documentCount++;
             for(String word : article.getWords()){
+                word = word.toLowerCase();
                 double count = counter.getOrDefault(word, 0.);
                 count = Double.min(count + 1, documentCount);
                 counter.put(word, count);
@@ -86,6 +90,7 @@ public class DocumentCollectionStats {
         int wordCount = 0;
         for(Article article : articles){
             for(String word : article.getWords()){
+                word = word.toLowerCase();
                 wordCount++;
                 counter.put(word, counter.getOrDefault(word, 0.) + 1);
             }
@@ -96,11 +101,4 @@ public class DocumentCollectionStats {
         }
         return counter;
     }
-
-    /*
-
-    1R
-    https://pdfs.semanticscholar.org/03af/c233b07d0fdfbab169fae5dfd44e7e0fc1b9.pdf
-
-     */
 }

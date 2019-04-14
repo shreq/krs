@@ -6,17 +6,16 @@ import KSR1.Statistics.DocumentCollectionStats;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Implementation of feature extractor that calculates feature vector based on TF-IDF of words with capital letters
  */
 public class CapitalKeywordExtractor implements FeatureExtractor {
 
-    Map<String, Double> idfs;
+    private double upperIdf;
 
     public CapitalKeywordExtractor(List<Article> articles) {
-        this.idfs = DocumentCollectionStats.inverseDocumentFrequencySoft(articles, new CaseComparator());
+        upperIdf = DocumentCollectionStats.inverseDocumentFrequencySoft(articles, new CaseComparator()).get("upper");
     }
 
     @Override
@@ -31,7 +30,7 @@ public class CapitalKeywordExtractor implements FeatureExtractor {
             }
         }
 
-        result.add(((double) appearances / (double) words.size()) * idfs.get("upper"));
+        result.add(((double) appearances / (double) words.size()) * upperIdf);
 
         return result;
     }

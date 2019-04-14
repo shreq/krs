@@ -24,4 +24,15 @@ class SGMFileTest {
                 .extracting(Article::getTitle)
                 .containsExactly("BAHIA COCOA REVIEW", "STANDARD OIL <SRD> TO FORM FINANCIAL UNIT");
     }
+
+    @Test
+    @DisplayName("Should strip XML entities/artifacts properly")
+    void shouldStrip() {
+        //given
+        String text = "123 &lt;XYZ&gt; abc";
+        //when
+        String res = SGMFile.stripXMLentities(text);
+        //then
+        assertThat(res).matches("123 XYZ abc");
+    }
 }

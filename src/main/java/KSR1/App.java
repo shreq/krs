@@ -38,8 +38,8 @@ public class App {
 
         DocumentCollection collection = null;
         try {
-            collection = new DocumentCollection(Collections.singletonList("src/main/resources/reuters/reut2-000.sgm"));
-//            collection = new DocumentCollection(files);
+//            collection = new DocumentCollection(Collections.singletonList("src/main/resources/reuters/reut2-017.sgm"));
+            collection = new DocumentCollection(files);
         } catch (FileNotFoundException e) {
             System.exit(EXIT_IO);
         }
@@ -66,17 +66,50 @@ public class App {
         ExtractionDB.initDB(learnArticles);
         Map<String, Double> p = ExtractionDB.idfs;
         extractor = makeExtractor(settings, keywords, learnArticles);
-        // TODO: investigate NullPointerExceptions when calling ExtractionDB.getIdf()
         List<ClassificationObject> referenceClassificationObjects =
                 learnArticles.stream().map(App::mapArticleToClassificationObject).collect(Collectors.toList());
         KnnClassifier classifier = makeClassifier(settings, referenceClassificationObjects);
         ExtractionDB.dropDB();
 
+        HashMap<String, HashMap<String, Integer>> results = makeResultsArray(settings);
+
         ExtractionDB.initDB(testArticles);
         extractor = makeExtractor(settings, keywords, testArticles);
-        LOGGER.info(testArticles.get(0).getPlaces().toString());
-        LOGGER.info(classifier.classifyObject(mapArticleToClassificationObject(testArticles.get(0))));
+        for(Article article : testArticles){
+            String actualClass = classifier.classifyObject(mapArticleToClassificationObject(article));
+            String expectedClass = "";
+            if(settings.category.equals("places")){
+                expectedClass = article.getPlaces().get(0);
+            }else if(settings.category.equals("orgs")){
+                expectedClass = article.getOrgs().get(0);
+            }
+            HashMap<String, Integer> innerMap = results.get(actualClass);
+            innerMap.put(expectedClass, innerMap.get(expectedClass) + 1);
+            results.put(actualClass, innerMap);
+        }
         ExtractionDB.dropDB();
+
+        System.out.println(results);
+    }
+
+    private static HashMap<String, HashMap<String, Integer>> makeResultsArray(Settings settings) {
+        HashMap<String, HashMap<String, Integer>> result = new HashMap<>();
+        HashSet<String> categories;
+        if(settings.category.equals("places")){
+            categories = DocumentCollection.allowedPlaces;
+        }else if(settings.category.equals("orgs")){
+            categories = DocumentCollection.allowedOrgs;
+        }else {
+            throw new IllegalArgumentException("Invalid category");
+        }
+        for(String category : categories){
+            HashMap<String, Integer> inner = new HashMap<>();
+            for(String inCat : categories){
+                inner.put(inCat, 0);
+            }
+            result.put(category, inner);
+        }
+        return result;
     }
 
     private static KnnClassifier makeClassifier(Settings settings, List<ClassificationObject> articles){
@@ -164,6 +197,7 @@ public class App {
                 return result;
             }
             case ROne: {
+                // https://pdfs.semanticscholar.org/03af/c233b07d0fdfbab169fae5dfd44e7e0fc1b9.pdf
                 //ExtractionDB.initDB(articles, comparator);
                 throw new RuntimeException("i will implement it in a moment");
                 //ExtractionDB.dropDB();
@@ -196,7 +230,7 @@ public class App {
     private static List<ArrayList<Article>> divideData(ArrayList<Article> articles, double trainingPercent){
         ArrayList<Article> learnArticles = new ArrayList<>();
         ArrayList<Article> testArticles = new ArrayList<>();
-        Collections.shuffle(articles, new Random());
+        //Collections.shuffle(articles, new Random());
         int trainingCount = (int) Math.round(articles.size() * trainingPercent / 100);
         int count = 0;
         for(Article article : articles){

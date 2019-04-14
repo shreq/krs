@@ -15,7 +15,7 @@ public class ExtractionDB {
 
     private static ExtractionDB instance = null;
 
-    private static Map<String, Double> idfs;
+    public static Map<String, Double> idfs;
 
     public static void initDB(List<Article> articles) {
         if(instance == null){
@@ -43,9 +43,10 @@ public class ExtractionDB {
 
     public double getIdf(String word){
         try{
-            return idfs.get(word);
+            return idfs.get(word.toLowerCase());
         }catch (NullPointerException e){
-            Logger.getLogger("XD").info(word);
+            Logger.getLogger("ExtractionDB").info(word);
+            idfs.put(word.toLowerCase(), 0.);
         }
         return 0.;
     }

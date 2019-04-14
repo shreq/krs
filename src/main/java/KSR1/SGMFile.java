@@ -72,16 +72,12 @@ public class SGMFile {
         return new ArrayList<>(Arrays.asList(result.split("</D><D>")));
     }
 
-    static private String stripXMLentities(String text){
+    static public String stripXMLentities(String text){
         return text.replaceAll("&lt;(.*?)&gt;", "$1")
                 .replace("&amp;", "&")
                 .replace("&apos;", "'")
-                .replace('\n', ' ')
-                .replaceAll("[-()]+|' | '|\\.\\.\\.|&quot;", " ")
-                .replace(" '", " ")
-                .replace("' ", " ")
-                .replaceAll("&#\\d\\d?;", "")
-                .replace('&', ' ')
+                .replaceAll("&#\\d+;|' | '|\\.\\.\\.|&quot;|[-;:+&$()%^*]", " ")
+                .replaceAll("[?!.]", ". ")
                 .replaceAll("\\d+[a-zA-Z]+|[a-zA-Z]\\d+", " ")
                 .replaceAll("\\s+", " ");
     }

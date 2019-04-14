@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import static junitparams.JUnitParamsRunner.$;
 import static org.junit.jupiter.api.Assertions.*;
 
-class EditDistanceTest {
+public class EditDistanceTest {
 
     private EditDistance distanceCalculator;
 
@@ -44,9 +44,9 @@ class EditDistanceTest {
     }
 
     private static Object[] getCases(){
-        return $($("abc", "abcd", 1),
-                 $("abcd", "abc", 1),
-                 $("abcd", "abce", 1),
+        return $($("abc", "abcd", 1/4.),
+                 $("abcd", "abc", 1/4.),
+                 $("abcd", "abce", 1/4.),
                  $("xabc", "abcx", 2),
                  $("abxcd", "abcxde", 3),
                  $("abcdefg", "uwxyzab", 7),

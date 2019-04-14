@@ -14,11 +14,16 @@ public class KnnClassifier {
     int neighboursCount;
     List<ClassificationObject> dataset;
     DistanceMeasure distance = null;
+    HashMap<String, Integer> labelFrequency;
 
     public KnnClassifier(int neighboursCount, List<ClassificationObject> dataset, DistanceMeasure distance) {
         this.neighboursCount = neighboursCount;
         this.dataset = dataset;
         this.distance = distance;
+        this.labelFrequency = new HashMap<>();
+        for(ClassificationObject object : this.dataset){
+            labelFrequency.put(object.getLabel(), labelFrequency.getOrDefault(object.getLabel(), 0) + 1);
+        }
     }
 
     public String classifyObject(ClassificationObject classificationObject) {
@@ -31,12 +36,16 @@ public class KnnClassifier {
             distances.put(object, distance);
         }
 
-        Map<String, Long> collector =
+        Map<String, Long> collected =
                 distances.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue()).map(Map.Entry::getKey)
                 .limit(neighboursCount).map(ClassificationObject::getLabel)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
+        Map<String, Double> results = new HashMap<>();
+        for(Map.Entry<String, Long> result : collected.entrySet()){
+            results.put(result.getKey(), result.getValue().doubleValue()/labelFrequency.get(result.getKey()));
+        }
 
-        return Collections.max(collector.entrySet(), Map.Entry.comparingByValue()).getKey();
+        return Collections.max(results.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
 }
