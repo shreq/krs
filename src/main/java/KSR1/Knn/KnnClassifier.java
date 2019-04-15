@@ -15,16 +15,14 @@ public class KnnClassifier {
 
     public KnnClassifier(int neighboursCount, List<ClassificationObject> dataset, DistanceMeasure distance) {
         this.neighboursCount = neighboursCount;
-        this.dataset = dataset;
         this.distance = distance;
         this.labelCount = new HashMap<>();
         this.dataset = new ArrayList<>();
-        int maxCount = 0;
+        long min = Collections.min(dataset.stream().collect(Collectors.groupingBy(ClassificationObject::getLabel, Collectors.counting())).values());
         for(ClassificationObject object : dataset){
             int count = labelCount.getOrDefault(object.getLabel(), 0);
-            if(count <= maxCount){
+            if(count < min){
                 labelCount.put(object.getLabel(), count + 1);
-                maxCount = Integer.max(maxCount, count + 1);
                 this.dataset.add(object);
             }
         }
@@ -45,11 +43,7 @@ public class KnnClassifier {
                 .sorted(Map.Entry.comparingByValue()).map(Map.Entry::getKey)
                 .limit(neighboursCount).map(ClassificationObject::getLabel)
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
-        Map<String, Double> results = new HashMap<>();
-        for(Map.Entry<String, Long> result : collected.entrySet()){
-            results.put(result.getKey(), result.getValue().doubleValue()/ labelCount.get(result.getKey()));
-        }
 
-        return Collections.max(results.entrySet(), Map.Entry.comparingByValue()).getKey();
+        return Collections.max(collected.entrySet(), Map.Entry.comparingByValue()).getKey();
     }
 }

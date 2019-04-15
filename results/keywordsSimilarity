@@ -1,0 +1,39 @@
+{
+  "data": {
+    "trainingPercent": 60
+  },
+  "training": {
+    "keywordsCount": 20,
+    "method": "tfidf"
+  },
+  "extraction": {
+    "keywordSetSimilarity": ?
+  },
+  "knnParams": {
+    "k": 13,
+    "distanceMetric": "euclidean"
+  },
+  "category": "places"
+}
+
+keywordSetSimilarity = cosineAmplitude
+       usa    canada japan  uk     france 
+usa    0,370  0,165  0,132  0,171  0,162  
+canada 0,252  0,249  0,163  0,144  0,191  
+japan  0,120  0,135  0,293  0,263  0,188  
+uk     0,155  0,103  0,271  0,303  0,168  
+france 0,155  0,155  0,311  0,165  0,214  
+
+Accuracy = 0.352
+Precision = 0.239
+
+keywordSetSimilarity = jaccard
+       usa    canada japan  uk     france 
+usa    0,362  0,160  0,149  0,172  0,157  
+canada 0,252  0,235  0,188  0,139  0,186  
+japan  0,150  0,128  0,248  0,286  0,188  
+uk     0,142  0,121  0,229  0,303  0,205  
+france 0,136  0,087  0,252  0,262  0,262  
+
+Accuracy = 0.344
+Precision = 0.237

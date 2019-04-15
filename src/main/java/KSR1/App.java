@@ -14,6 +14,7 @@ import javax.naming.ConfigurationException;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
+import java.util.stream.Collectors;
 
 public class App {
 
@@ -31,8 +32,8 @@ public class App {
 
         DocumentCollection documents = null;
         try {
-            documents = new DocumentCollection(Collections.singletonList("src/main/resources/reuters/reut2-017.sgm"));
-//            documents = new DocumentCollection(reutFiles);
+//            documents = new DocumentCollection(Collections.singletonList("src/main/resources/reuters/reut2-017.sgm"));
+            documents = new DocumentCollection(reutFiles);
         } catch (FileNotFoundException e) {
             System.exit(EXIT_IO);
         }
@@ -55,12 +56,68 @@ public class App {
         for(ClassificationObject object : testObjects){
             String actualClass = classifier.classifyObject(object);
             String expectedClass = object.getLabel();
-            Map<String, Integer> innerMap = results.get(actualClass);
-            innerMap.put(expectedClass, innerMap.get(expectedClass) + 1);
-            results.put(actualClass, innerMap);
+            Map<String, Integer> innerMap = results.get(expectedClass);
+            innerMap.put(actualClass, innerMap.get(actualClass) + 1);
+            results.put(expectedClass, innerMap);
         }
 
         System.out.println(results);
+        printResults(results);
+        System.out.println();
+        printStats(results);
+    }
+
+    private static void printStats(Map<String, Map<String, Integer>> results) {
+        List<Integer> accVals = new ArrayList<>();
+        Map<String, Integer> precVals = new HashMap<>();
+        Map<String, Integer> precValsSpec = new HashMap<>();
+
+        int count = 0;
+        for(Map.Entry<String, Map<String, Integer>> row : results.entrySet()){
+            for(int val : row.getValue().values()){
+                count += val;
+            }
+            accVals.add(row.getValue().get(row.getKey()));
+            precValsSpec.put(row.getKey(), row.getValue().get(row.getKey()));
+            for(Map.Entry<String, Integer> col : row.getValue().entrySet()){
+                int pCount = precVals.getOrDefault(col.getKey(), 0);
+                precVals.put(col.getKey(), pCount + col.getValue());
+            }
+        }
+        int accSum = 0;
+        for(int val : accVals){
+            accSum += val;
+        }
+        System.out.println("Accuracy = " + (double)accSum/count);
+
+        double pSumm = 0;
+        for(Map.Entry<String, Integer> p : precVals.entrySet()){
+            pSumm += (double)precValsSpec.get(p.getKey())/p.getValue();
+        }
+        pSumm /= 5;
+        System.out.println("Precision = " + pSumm);
+    }
+
+    private static void printResults(Map<String, Map<String, Integer>> res){
+        Map<String, Integer> counter = new HashMap<>();
+
+        System.out.print("       ");
+        for(String rowLabel : res.keySet()){
+            System.out.print(String.format("%-7s", rowLabel));
+        }
+        System.out.println();
+        for(Map.Entry<String, Map<String, Integer>> row : res.entrySet()){
+            int count = 0;
+            for(int val : row.getValue().values()){
+                count += val;
+            }
+
+            System.out.print(String.format("%-7s", row.getKey()));
+            for(int val : row.getValue().values()){
+                System.out.print(String.format("%-7.3f", (double)val/count));
+            }
+            System.out.println();
+        }
     }
 
     private static Map<String, Map<String, Integer>> makeResultsArray(Settings settings) {

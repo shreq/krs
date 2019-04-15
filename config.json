@@ -3,15 +3,15 @@
     "trainingPercent": 60
   },
   "training": {
-    "keywordsCount": 20,
+    "keywordsCount": 50,
     "method": "tfidf"
   },
   "extraction": {
     "keywordSetSimilarity": "cosineamplitude"
   },
   "knnParams": {
-    "k": 15,
-    "distanceMetric": "manhattan"
+    "k": 13,
+    "distanceMetric": "euclidean"
   },
   "category": "places"
 }

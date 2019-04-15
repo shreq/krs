@@ -1,0 +1,51 @@
+{
+  "data": {
+    "trainingPercent": 60
+  },
+  "training": {
+    "keywordsCount": 20,
+    "method": "tfidf"
+  },
+  "extraction": {
+    "keywordSetSimilarity": "cosineamplitude"
+  },
+  "knnParams": {
+    "k":13,
+    "distanceMetric": ?
+  },
+  "category": "places"
+}
+
+distanceMetric = chebyshev
+       usa    canada japan  uk     france 
+usa    0,359  0,164  0,136  0,170  0,171  
+canada 0,238  0,247  0,186  0,133  0,197  
+japan  0,120  0,158  0,278  0,218  0,226  
+uk     0,168  0,100  0,255  0,308  0,168  
+france 0,175  0,126  0,233  0,204  0,262  
+
+Accuracy = 0.344
+Precision = 0.239
+
+distanceMetric = euclidean
+       usa    canada japan  uk     france 
+usa    0,370  0,165  0,132  0,171  0,162  
+canada 0,252  0,249  0,163  0,144  0,191  
+japan  0,120  0,135  0,293  0,263  0,188  
+uk     0,155  0,103  0,271  0,303  0,168  
+france 0,155  0,155  0,311  0,165  0,214  
+
+Accuracy = 0.352
+Precision = 0.239
+
+distanceMetric = manhattan
+k = 13
+       usa    canada japan  uk     france 
+usa    0,355  0,178  0,149  0,159  0,159  
+canada 0,266  0,244  0,166  0,152  0,172  
+japan  0,143  0,135  0,361  0,173  0,188  
+uk     0,147  0,113  0,282  0,282  0,176  
+france 0,155  0,165  0,282  0,194  0,204  
+
+Accuracy = 0.339
+Precision = 0.237

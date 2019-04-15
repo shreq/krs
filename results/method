@@ -1,0 +1,39 @@
+{
+  "data": {
+    "trainingPercent": 60
+  },
+  "training": {
+    "keywordsCount": 20,
+    "method": ?
+  },
+  "extraction": {
+    "keywordSetSimilarity": "cosineamplitude"
+  },
+  "knnParams": {
+    "k": 13,
+    "distanceMetric": "euclidean"
+  },
+  "category": "places"
+}
+
+method = tfidf
+       usa    canada japan  uk     france 
+usa    0,370  0,165  0,132  0,171  0,162  
+canada 0,252  0,249  0,163  0,144  0,191  
+japan  0,120  0,135  0,293  0,263  0,188  
+uk     0,155  0,103  0,271  0,303  0,168  
+france 0,155  0,155  0,311  0,165  0,214  
+
+Accuracy = 0.352
+Precision = 0.239
+
+method = tf
+       usa    canada japan  uk     france 
+usa    0,349  0,160  0,155  0,182  0,154  
+canada 0,230  0,230  0,194  0,166  0,180  
+japan  0,158  0,165  0,331  0,128  0,218  
+uk     0,205  0,095  0,287  0,276  0,137  
+france 0,126  0,107  0,388  0,146  0,233  
+
+Accuracy = 0.333
+Precision = 0.234
