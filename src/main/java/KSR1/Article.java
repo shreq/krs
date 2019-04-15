@@ -75,6 +75,14 @@ public class Article {
         return places;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public String getCourse() {
+        return course;
+    }
+
     public void setText(String text){
         this.text = text;
     }

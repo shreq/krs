@@ -1,20 +1,16 @@
 {
   "data": {
-    "trainingPercent": 70
+    "trainingPercent": 60
   },
   "training": {
-    "keywordsCount": 50,
+    "keywordsCount": 20,
     "method": "tfidf"
   },
   "extraction": {
-    "keywordSetSimilarity": "jaccard"
-  },
-  "equality": {
-    "equalityType": "strict",
-    "threshold": 0.9
+    "keywordSetSimilarity": "cosineamplitude"
   },
   "knnParams": {
-    "k": 50,
+    "k": 15,
     "distanceMetric": "chebyshev"
   },
   "category": "places"

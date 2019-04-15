@@ -32,7 +32,7 @@ public class App {
         DocumentCollection documents = null;
         try {
 //            documents = new DocumentCollection(Collections.singletonList("src/main/resources/reuters/reut2-017.sgm"));
-            documents = new DocumentCollection(files);
+            documents = new DocumentCollection(reutFiles);
         } catch (FileNotFoundException e) {
             System.exit(EXIT_IO);
         }
@@ -108,7 +108,7 @@ public class App {
     public static final int EXIT_CONFIG = 1;
     public static final int EXIT_IO = 2;
 
-    static final ArrayList<String> files = new ArrayList<>(Arrays.asList(
+    static final ArrayList<String> reutFiles = new ArrayList<>(Arrays.asList(
             "src/main/resources/reuters/reut2-000.sgm",
             "src/main/resources/reuters/reut2-001.sgm",
             "src/main/resources/reuters/reut2-002.sgm",
@@ -132,4 +132,6 @@ public class App {
             "src/main/resources/reuters/reut2-020.sgm",
             "src/main/resources/reuters/reut2-021.sgm"
     ));
+
+    static final String custFile = "src/main/resources/custom/recipes.xml";
 }

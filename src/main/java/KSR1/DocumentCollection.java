@@ -23,9 +23,8 @@ public class DocumentCollection {
     public static final HashSet<String> allowedPlaces =
             new HashSet<>(Arrays.asList("west-germany", "usa", "france", "uk", "canada", "japan"));
 
-    // TODO: znaleźć 3-5 najczęściej występujących organizacji i wstawić tu zamiast tych, co są teraz
     public static final HashSet<String> allowedOrgs =
-            new HashSet<>(Arrays.asList("ec", "worldbank", "oecd"));
+            new HashSet<>(Arrays.asList("ec", "worldbank", "imf", "opec", "ico-coffe"));
 
     private DocumentCollection(){
         articles = new ArrayList<>();
@@ -62,11 +61,28 @@ public class DocumentCollection {
     }
 
     public void filterCategory(Settings.Category category){
-        if(category == Settings.Category.Places){
-            this.filterPlaces();
-        }else if(category == Settings.Category.Orgs){
-            this.filterOrgs();
+        switch(category){
+            case Places:
+                this.filterPlaces();
+                break;
+            case Orgs:
+                this.filterOrgs();
+                break;
+            case Course:
+                this.filterCourse();
+                break;
+            case Type:
+                this.filterType();
+                break;
         }
+    }
+
+    public void filterCourse(){
+        articles.removeIf(article -> article.getPlaces().size() != 1 || !allowedPlaces.contains(article.getPlaces().get(0)));
+    }
+
+    public void filterType(){
+        articles.removeIf(article -> article.getPlaces().size() != 1 || !allowedPlaces.contains(article.getPlaces().get(0)));
     }
 
     public void filterPlaces(){
