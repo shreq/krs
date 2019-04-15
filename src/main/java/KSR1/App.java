@@ -65,9 +65,9 @@ public class App {
     private static Map<String, Map<String, Integer>> makeResultsArray(Settings settings) {
         Map<String, Map<String, Integer>> result = new HashMap<>();
         Set<String> categories;
-        if(settings.category.equals("places")){
+        if(settings.category == Settings.Category.Places){
             categories = DocumentCollection.allowedPlaces;
-        }else if(settings.category.equals("orgs")){
+        }else if(settings.category == Settings.Category.Orgs){
             categories = DocumentCollection.allowedOrgs;
         }else {
             throw new IllegalArgumentException("Invalid category");
