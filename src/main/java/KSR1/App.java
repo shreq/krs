@@ -31,8 +31,8 @@ public class App {
 
         DocumentCollection documents = null;
         try {
-//            documents = new DocumentCollection(Collections.singletonList("src/main/resources/reuters/reut2-017.sgm"));
-            documents = new DocumentCollection(reutFiles);
+            documents = new DocumentCollection(Collections.singletonList("src/main/resources/reuters/reut2-017.sgm"));
+//            documents = new DocumentCollection(reutFiles);
         } catch (FileNotFoundException e) {
             System.exit(EXIT_IO);
         }
@@ -44,13 +44,14 @@ public class App {
 
         DocumentCollection trainingDocuments = documents.splitGetSubset(settings.trainingPercent);
         final List<FuzzySet<String>> keywordSets = trainingDocuments.makeKeywords(settings);
+        final int longWordLength = trainingDocuments.getLongWordLength();
 
-        List<ClassificationObject> trainingObjects = trainingDocuments.extractClassificationObjects(settings, keywordSets);
+        List<ClassificationObject> trainingObjects = trainingDocuments.extractClassificationObjects(settings, keywordSets, longWordLength);
         KnnClassifier classifier = makeClassifier(settings, trainingObjects);
 
         Map<String, Map<String, Integer>> results = makeResultsArray(settings);
 
-        List<ClassificationObject> testObjects = documents.extractClassificationObjects(settings, keywordSets);
+        List<ClassificationObject> testObjects = documents.extractClassificationObjects(settings, keywordSets, longWordLength);
         for(ClassificationObject object : testObjects){
             String actualClass = classifier.classifyObject(object);
             String expectedClass = object.getLabel();

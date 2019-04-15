@@ -102,7 +102,7 @@ public class DocumentCollection {
         return subCollection;
     }
 
-    public List<ClassificationObject> extractClassificationObjects(Settings settings, List<FuzzySet<String>> keywordsSets){
+    public List<ClassificationObject> extractClassificationObjects(Settings settings, List<FuzzySet<String>> keywordsSets, int longWordLength){
         List<ClassificationObject> classificationObjects = new ArrayList<>();
         Function<Article, Map<String, Double>> wordStat;
         switch (settings.trainingMethod){
@@ -149,7 +149,9 @@ public class DocumentCollection {
             int uniqueCount = new HashSet<>(article.getWords()).size();
             values.add((double)uniqueCount/article.getWords().size());
 
-            // TODO: here we can add more features
+            // long words
+            long longWordCount = article.getWords().stream().filter(w -> w.length() > longWordLength).count();
+            values.add((double)longWordCount/article.getWords().size());
 
             // save features
             ClassificationObject cObj = new ClassificationObject();
@@ -162,6 +164,18 @@ public class DocumentCollection {
             classificationObjects.add(cObj);
         }
         return classificationObjects;
+    }
+
+    public int getLongWordLength(){
+        List<Integer> lengths = new ArrayList<>();
+        for(Article article : articles){
+            for(String word : article.getWords()){
+                int len = word.length();
+                lengths.add(len);
+            }
+        }
+        lengths.sort(Integer::compareTo);
+        return lengths.get(Math.round(0.8f*lengths.size()));
     }
 
     /**

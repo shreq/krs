@@ -11,7 +11,7 @@
   },
   "knnParams": {
     "k": 15,
-    "distanceMetric": "chebyshev"
+    "distanceMetric": "manhattan"
   },
   "category": "places"
 }
