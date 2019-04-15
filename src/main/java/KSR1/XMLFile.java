@@ -36,7 +36,7 @@ public class XMLFile {
                 article.type = element.getElementsByTagName("TYPE").item(0).getTextContent();
                 article.course = element.getElementsByTagName("COURSE").item(0).getTextContent();
 
-                NodeList nodeListText = doc.getElementsByTagName("TEXT");
+                NodeList nodeListText = element.getElementsByTagName("TEXT");
                 for (int j = 0; j < nodeListText.getLength(); j++) {
                     Node nodeText = nodeListText.item(j);
 
