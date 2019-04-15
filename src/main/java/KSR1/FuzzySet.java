@@ -1,8 +1,6 @@
 package KSR1;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class FuzzySet<ElemType> {
 
@@ -27,13 +25,36 @@ public class FuzzySet<ElemType> {
     }
 
     public static double jaccardSimilarity(FuzzySet<String> set1, FuzzySet<String> set2){
-        // TODO: implement
-        return 0;
+        // TODO: implement - CHECK
+
+        Set<String> keys1 = set1.set.keySet();
+        Set<String> keys2 = set2.set.keySet();
+        int keys1Size = keys1.size();
+        int keys2Size = keys2.size();
+
+        keys1.retainAll(keys2);
+        int intersectionSize = keys1.size();
+
+        return 1.0 / (keys1Size + keys2Size - intersectionSize) * intersectionSize;
     }
 
     public static double cosAmpSimilarity(FuzzySet<String> set1, FuzzySet<String> set2){
-        // TODO: implement
-        return 0;
+        // TODO: implement - CHECK
+
+        Double[] values1 = set1.set.values().toArray(new Double[0]);
+        Double[] values2 = set2.set.values().toArray(new Double[0]);
+
+        double dot = 0.0;
+        double norm1 = 0.0;
+        double norm2 = 0.0;
+
+        for (int i = 0; i < values1.length; i++) {
+            dot += values1[i] * values2[i];
+            norm1 += Math.pow(values1[i], 2);
+            norm2 += Math.pow(values2[i], 2);
+        }
+
+        return dot / (Math.sqrt(norm1) * Math.sqrt(norm2));
     }
 
     public Set<ElemType> support() {
