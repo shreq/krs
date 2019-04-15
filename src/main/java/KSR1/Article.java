@@ -5,6 +5,9 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Article {
+    String type;
+    String course;
+
     String title;
     private String text;
     List<String> orgs = new ArrayList<String>();
