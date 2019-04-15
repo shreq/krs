@@ -24,7 +24,7 @@ public class DocumentCollection {
             new HashSet<>(Arrays.asList("usa", "france", "uk", "canada", "japan"));
 
     public static final HashSet<String> allowedOrgs =
-            new HashSet<>(Arrays.asList("ec", "worldbank", "imf", "opec", "ico-coffe"));
+            new HashSet<>(Arrays.asList("ec", "worldbank", "imf", "opec", "icco"));
 
     private DocumentCollection(){
         articles = new ArrayList<>();

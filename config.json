@@ -3,7 +3,7 @@
     "trainingPercent": 60
   },
   "training": {
-    "keywordsCount": 50,
+    "keywordsCount": 15,
     "method": "tfidf"
   },
   "extraction": {
@@ -13,5 +13,5 @@
     "k": 13,
     "distanceMetric": "euclidean"
   },
-  "category": "places"
+  "category": "orgs"
 }
