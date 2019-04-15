@@ -24,10 +24,11 @@ public class KnnClassifier {
         for(ClassificationObject object : this.dataset){
             labelFrequency.put(object.getLabel(), labelFrequency.getOrDefault(object.getLabel(), 0) + 1);
         }
+        // TODO: save smallest labelFrequency
+        // TODO: multiply neighboursCount by 1/smallestLabelFrequency (frequency!! - (0, 1])
     }
 
     public String classifyObject(ClassificationObject classificationObject) {
-        // TODO: przeskalować ze względu na ilość obiektów różnych typów, np: 100xClassA i 1xClassB => zawsze przy wzięciu k obiektów jest więcej ClassA
         Map<ClassificationObject, Double> distances = new HashMap<>();
 
         for (ClassificationObject object : dataset) {

@@ -1,6 +1,8 @@
 package KSR1;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class FuzzySet<ElemType> {
 
@@ -14,7 +16,11 @@ public class FuzzySet<ElemType> {
         set = new HashMap<>(map);
     }
 
-    public static double similarity(FuzzySet<String> set1, FuzzySet<String> set2, Settings.SetSimilarity similarity) {
+    public FuzzySet(FuzzySet<ElemType> set){
+        this.set = (HashMap<ElemType, Double>) set.set.clone();
+    }
+
+    public static <T> double similarity(FuzzySet<T> set1, FuzzySet<T> set2, Settings.SetSimilarity similarity) {
         if(similarity == Settings.SetSimilarity.Jaccard){
             return jaccardSimilarity(set1, set2);
         }else if (similarity == Settings.SetSimilarity.CosineAmplitude){
@@ -24,23 +30,13 @@ public class FuzzySet<ElemType> {
         }
     }
 
-    public static double jaccardSimilarity(FuzzySet<String> set1, FuzzySet<String> set2){
-        // TODO: implement - CHECK
-
-        Set<String> keys1 = set1.set.keySet();
-        Set<String> keys2 = set2.set.keySet();
-        int keys1Size = keys1.size();
-        int keys2Size = keys2.size();
-
-        keys1.retainAll(keys2);
-        int intersectionSize = keys1.size();
-
-        return 1.0 / (keys1Size + keys2Size - intersectionSize) * intersectionSize;
+    public static <T> double jaccardSimilarity(FuzzySet<T> set1, FuzzySet<T> set2){
+        double intersectionCard = FuzzySet.intersection(set1, set2).cardinality();
+        double sumCard = FuzzySet.sum(set1, set2).cardinality();
+        return intersectionCard/sumCard;
     }
 
-    public static double cosAmpSimilarity(FuzzySet<String> set1, FuzzySet<String> set2){
-        // TODO: implement - CHECK
-
+public static <T> double cosAmpSimilarity(FuzzySet<T> set1, FuzzySet<T> set2){
         Double[] values1 = set1.set.values().toArray(new Double[0]);
         Double[] values2 = set2.set.values().toArray(new Double[0]);
 
@@ -55,6 +51,28 @@ public class FuzzySet<ElemType> {
         }
 
         return dot / (Math.sqrt(norm1) * Math.sqrt(norm2));
+    }
+
+    public static <T> FuzzySet<T> intersection(FuzzySet<T> set1, FuzzySet<T> set2){
+        FuzzySet<T> result = new FuzzySet<T>();
+        for(Map.Entry<T, Double> entry : set1.entrySet()){
+            if (set2.set.containsKey(entry.getKey())){
+                result.set.put(entry.getKey(), Double.min(entry.getValue(), set2.set.get(entry.getKey())));
+            }
+        }
+        return result;
+    }
+
+    public static <T> FuzzySet<T> sum(FuzzySet<T> set1, FuzzySet<T> set2){
+        FuzzySet<T> result = new FuzzySet<T>(set1);
+        for(Map.Entry<T, Double> entry : set2.entrySet()){
+            if (result.set.containsKey(entry.getKey())){
+                result.set.put(entry.getKey(), Double.max(entry.getValue(), result.set.get(entry.getKey())));
+            }else{
+                result.set.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
     }
 
     public Set<ElemType> support() {

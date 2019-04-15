@@ -74,14 +74,14 @@ public class DocumentCollection {
     }
 
     public void filterOrgs(){
-        articles.removeIf(article -> article.getOrgs().size() != 1 || !allowedPlaces.contains(article.getOrgs().get(0)));
+        articles.removeIf(article -> article.getOrgs().size() != 1 || !allowedOrgs.contains(article.getOrgs().get(0)));
     }
 
     public DocumentCollection splitGetSubset(double subsetSizePercent){
         DocumentCollection subCollection = new DocumentCollection();
         int size = articles.size();
         int count = (int)Math.round(subsetSizePercent*0.01*size);
-        subCollection.articles = articles.subList(size - count, size);
+        subCollection.articles = new ArrayList<>(articles.subList(size - count, size));
         this.articles.subList(size - count, size).clear();
         return subCollection;
     }
@@ -97,8 +97,8 @@ public class DocumentCollection {
                 final Map<String, Double> idfs = inverseDocumentFrequency(articles);
                 wordStat = (art) -> {
                     Map<String, Double> tfs = termFrequency(Collections.singletonList(art));
-                    for(Map.Entry<String, Double> idf : idfs.entrySet()){
-                        tfs.replace(idf.getKey(), tfs.get(idf.getKey())*idf.getValue());
+                    for(Map.Entry<String, Double> tf : tfs.entrySet()){
+                        tfs.replace(tf.getKey(), idfs.get(tf.getKey())*tf.getValue());
                     }
                     return tfs;
                 };
@@ -181,8 +181,8 @@ public class DocumentCollection {
                 return (artList) -> {
                     Map<String, Double> tfs = termFrequency(artList);
                     Map<String, Double> idfs = inverseDocumentFrequency(artList);
-                    for(Map.Entry<String, Double> idf : idfs.entrySet()){
-                        tfs.replace(idf.getKey(), tfs.get(idf.getKey())*idf.getValue());
+                    for(Map.Entry<String, Double> tf : tfs.entrySet()){
+                        tfs.replace(tf.getKey(), idfs.get(tf.getKey())*tf.getValue());
                     }
                     return tfs;
                 };

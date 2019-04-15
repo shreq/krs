@@ -3,8 +3,8 @@
     "trainingPercent": 70
   },
   "training": {
-    "keywordsCount": 40,
-    "method": "idf"
+    "keywordsCount": 50,
+    "method": "tfidf"
   },
   "extraction": {
     "keywordSetSimilarity": "jaccard"
@@ -14,8 +14,8 @@
     "threshold": 0.9
   },
   "knnParams": {
-    "k": 15,
-    "distanceMetric": "euclidean"
+    "k": 50,
+    "distanceMetric": "chebyshev"
   },
   "category": "places"
 }
