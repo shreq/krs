@@ -1,8 +1,6 @@
 package KSR1;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class FuzzySet<ElemType> {
 
@@ -36,18 +34,19 @@ public class FuzzySet<ElemType> {
         return intersectionCard/sumCard;
     }
 
-public static <T> double cosAmpSimilarity(FuzzySet<T> set1, FuzzySet<T> set2){
-        Double[] values1 = set1.set.values().toArray(new Double[0]);
-        Double[] values2 = set2.set.values().toArray(new Double[0]);
+    public static <T> double cosAmpSimilarity(FuzzySet<T> set1, FuzzySet<T> set2){
+        List<Double> values1 = new ArrayList<>(set1.set.values());
+        List<Double> values2 = new ArrayList<>(set2.set.values());
 
         double dot = 0.0;
         double norm1 = 0.0;
         double norm2 = 0.0;
 
-        for (int i = 0; i < values1.length; i++) {
-            dot += values1[i] * values2[i];
-            norm1 += Math.pow(values1[i], 2);
-            norm2 += Math.pow(values2[i], 2);
+        int size = Integer.min(values1.size(), values2.size());
+        for (int i = 0; i < size; i++) {
+            dot += values1.get(i) * values2.get(i);
+            norm1 += Math.pow(values1.get(i), 2);
+            norm2 += Math.pow(values2.get(i), 2);
         }
 
         return dot / (Math.sqrt(norm1) * Math.sqrt(norm2));

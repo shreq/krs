@@ -24,10 +24,6 @@ public class Settings {
     // features
     SetSimilarity setSimilarity;
 
-    // equality
-    Equality equalityType;
-    double threshold;
-
     // knnParams
     int k;
     Metric distanceMetric;
@@ -79,20 +75,6 @@ public class Settings {
             result.setSimilarity = similarityFromString(extraction.get("keywordSetSimilarity").toString());
         }
 
-        JSONObject equality = (JSONObject) mapper.get("equality");
-        if(equality == null || !equality.containsKey("equalityType")){
-            LOGGER.log(Level.INFO, "No equality.equalityType found - setting to default value: strict");
-            result.equalityType = Equality.Strict;
-        }else{
-            result.equalityType = equalityFromString(equality.get("equalityType").toString());
-        }
-        if(!result.equalityType.equals(Equality.Strict) && !equality.containsKey("threshold")){
-            LOGGER.log(Level.SEVERE, "No equality.threshold found");
-            throw new ConfigurationException("No equality.threshold parameter");
-        }else{
-            result.threshold = Double.parseDouble(equality.get("threshold").toString());
-        }
-
         JSONObject knnParams = (JSONObject) mapper.get("knnParams");
         if(knnParams == null || !knnParams.containsKey("k")){
             LOGGER.log(Level.SEVERE, "No knnParams.k found");
@@ -115,43 +97,6 @@ public class Settings {
         }
 
         return result;
-    }
-
-    enum Equality{
-        Strict,
-        NGram,
-        GenBoundNGram,
-        EDist
-    }
-
-    private static Equality equalityFromString(String str){
-        switch (str){
-            case "strict":
-                return Equality.Strict;
-            case "nGram":
-                return Equality.NGram;
-            case "genBoundNGram":
-                return Equality.GenBoundNGram;
-            case "eDist":
-                return Equality.EDist;
-            default:
-                throw new IllegalArgumentException("Invalid equality type");
-        }
-    }
-
-    private static String toString(Equality eq){
-        switch (eq){
-            case Strict:
-                return "strict";
-            case NGram:
-                return "nGram";
-            case GenBoundNGram:
-                return "genBoundNGram";
-            case EDist:
-                return "eDist";
-            default:
-                return "";
-        }
     }
 
     enum Method{
@@ -195,7 +140,9 @@ public class Settings {
 
     enum Category {
         Places,
-        Orgs
+        Orgs,
+        Course,
+        Type
     }
 
     private static Category categoryFromString(String str){

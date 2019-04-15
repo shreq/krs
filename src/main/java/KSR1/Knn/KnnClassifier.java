@@ -2,10 +2,7 @@ package KSR1.Knn;
 
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -14,18 +11,23 @@ public class KnnClassifier {
     int neighboursCount;
     List<ClassificationObject> dataset;
     DistanceMeasure distance = null;
-    HashMap<String, Integer> labelFrequency;
+    HashMap<String, Integer> labelCount;
 
     public KnnClassifier(int neighboursCount, List<ClassificationObject> dataset, DistanceMeasure distance) {
         this.neighboursCount = neighboursCount;
         this.dataset = dataset;
         this.distance = distance;
-        this.labelFrequency = new HashMap<>();
-        for(ClassificationObject object : this.dataset){
-            labelFrequency.put(object.getLabel(), labelFrequency.getOrDefault(object.getLabel(), 0) + 1);
+        this.labelCount = new HashMap<>();
+        this.dataset = new ArrayList<>();
+        int maxCount = 0;
+        for(ClassificationObject object : dataset){
+            int count = labelCount.getOrDefault(object.getLabel(), 0);
+            if(count <= maxCount){
+                labelCount.put(object.getLabel(), count + 1);
+                maxCount = Integer.max(maxCount, count + 1);
+                this.dataset.add(object);
+            }
         }
-        // TODO: save smallest labelFrequency
-        // TODO: multiply neighboursCount by 1/smallestLabelFrequency (frequency!! - (0, 1])
     }
 
     public String classifyObject(ClassificationObject classificationObject) {
@@ -45,7 +47,7 @@ public class KnnClassifier {
                 .collect(Collectors.groupingBy(Function.identity(), Collectors.counting()));
         Map<String, Double> results = new HashMap<>();
         for(Map.Entry<String, Long> result : collected.entrySet()){
-            results.put(result.getKey(), result.getValue().doubleValue()/labelFrequency.get(result.getKey()));
+            results.put(result.getKey(), result.getValue().doubleValue()/ labelCount.get(result.getKey()));
         }
 
         return Collections.max(results.entrySet(), Map.Entry.comparingByValue()).getKey();
