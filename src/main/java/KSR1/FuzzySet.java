@@ -18,16 +18,6 @@ public class FuzzySet<ElemType> {
         this.set = (HashMap<ElemType, Double>) set.set.clone();
     }
 
-    public static <T> double similarity(FuzzySet<T> set1, FuzzySet<T> set2, Settings.SetSimilarity similarity) {
-        if(similarity == Settings.SetSimilarity.Jaccard){
-            return jaccardSimilarity(set1, set2);
-        }else if (similarity == Settings.SetSimilarity.CosineAmplitude){
-            return cosAmpSimilarity(set1, set2);
-        }else{
-            return -1;
-        }
-    }
-
     public static <T> double jaccardSimilarity(FuzzySet<T> set1, FuzzySet<T> set2){
         double intersectionCard = FuzzySet.intersection(set1, set2).cardinality();
         double sumCard = FuzzySet.sum(set1, set2).cardinality();

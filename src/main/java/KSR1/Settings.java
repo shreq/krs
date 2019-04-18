@@ -19,10 +19,7 @@ public class Settings {
 
     // training
     int keywordsCount;
-    Method trainingMethod;
-
-    // features
-    SetSimilarity setSimilarity;
+    public Method trainingMethod;
 
     // knnParams
     int k;
@@ -65,14 +62,6 @@ public class Settings {
             result.trainingMethod = Method.TFIDF;
         }else{
             result.trainingMethod = methodFromString(training.get("method").toString());
-        }
-
-        JSONObject extraction = (JSONObject) mapper.get("extraction");
-        if(extraction == null || !extraction.containsKey("keywordSetSimilarity")){
-            LOGGER.log(Level.INFO, "No extraction.keywordSetSimilarity found - setting to default value: jaccard");
-            result.setSimilarity = SetSimilarity.Jaccard;
-        }else{
-            result.setSimilarity = similarityFromString(extraction.get("keywordSetSimilarity").toString());
         }
 
         JSONObject knnParams = (JSONObject) mapper.get("knnParams");
@@ -151,22 +140,6 @@ public class Settings {
                 return Category.Places;
             case "orgs":
                 return Category.Orgs;
-            default:
-                throw new IllegalArgumentException("Invalid category");
-        }
-    }
-
-    enum SetSimilarity{
-        Jaccard,
-        CosineAmplitude
-    }
-
-    private static SetSimilarity similarityFromString(String str) {
-        switch (str.toLowerCase()){
-            case "jaccard":
-                return SetSimilarity.Jaccard;
-            case "cosineamplitude":
-                return SetSimilarity.CosineAmplitude;
             default:
                 throw new IllegalArgumentException("Invalid category");
         }

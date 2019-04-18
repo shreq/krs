@@ -6,9 +6,6 @@
     "keywordsCount": 15,
     "method": "tfidf"
   },
-  "extraction": {
-    "keywordSetSimilarity": "cosineamplitude"
-  },
   "knnParams": {
     "k": 13,
     "distanceMetric": "euclidean"

@@ -3,6 +3,7 @@ package KSR1;
 import KSR1.Knn.ClassificationObject;
 import KSR1.Preprocessing.Stemmer;
 import KSR1.Preprocessing.StopWordFilter;
+import KSR1.Processing.KeywordExtractor;
 import KSR1.Statistics.DocumentCollectionStats;
 
 import java.io.File;
@@ -130,11 +131,8 @@ public class DocumentCollection {
             List<Double> values = new ArrayList<>();
 
             // keyword features
-            Map<String, Double> tfs = wordStat.apply(article);
-            FuzzySet<String> termSet = new FuzzySet<>(tfs);
-            for(FuzzySet<String> keywords : keywordsSets){
-                values.add(FuzzySet.similarity(termSet, keywords, settings.setSimilarity));
-            }
+            KeywordExtractor kwExtractor = new KeywordExtractor(keywordsSets, wordStat);
+            values.addAll(kwExtractor.extract(article));
 
             // capital letters
             int capLetCount = 0;
