@@ -3,7 +3,10 @@ package KSR1;
 import KSR1.Knn.ClassificationObject;
 import KSR1.Preprocessing.Stemmer;
 import KSR1.Preprocessing.StopWordFilter;
+import KSR1.Processing.CapitalLetterExtractor;
 import KSR1.Processing.KeywordExtractor;
+import KSR1.Processing.UniqueWordsextractor;
+import KSR1.Processing.WordLengthExtractor;
 import KSR1.Statistics.DocumentCollectionStats;
 
 import java.io.File;
@@ -103,53 +106,25 @@ public class DocumentCollection {
         return subCollection;
     }
 
-    public List<ClassificationObject> extractClassificationObjects(Settings settings, List<FuzzySet<String>> keywordsSets, int longWordLength){
+    public List<ClassificationObject> extractClassificationObjects(Settings settings, KeywordExtractor kwExtractor, WordLengthExtractor wlExtractor){
         List<ClassificationObject> classificationObjects = new ArrayList<>();
-        Function<Article, Map<String, Double>> wordStat;
-        switch (settings.trainingMethod){
-            case TF:
-                wordStat = art -> termFrequency(Collections.singletonList(art));
-                break;
-            case TFIDF:
-                final Map<String, Double> idfs = inverseDocumentFrequency(articles);
-                wordStat = (art) -> {
-                    Map<String, Double> tfs = termFrequency(Collections.singletonList(art));
-                    for(Map.Entry<String, Double> tf : tfs.entrySet()){
-                        tfs.replace(tf.getKey(), idfs.get(tf.getKey())*tf.getValue());
-                    }
-                    return tfs;
-                };
-                break;
-            case ROne:
-                // TODO: implement
-                throw new RuntimeException("Not implemented");
-            default:
-                throw new IllegalArgumentException("Invalid training method");
-        }
 
         for(Article article : articles){
             List<Double> values = new ArrayList<>();
 
             // keyword features
-            KeywordExtractor kwExtractor = new KeywordExtractor(keywordsSets, wordStat);
             values.addAll(kwExtractor.extract(article));
 
             // capital letters
-            int capLetCount = 0;
-            for(String word : article.getWords()){
-                if(Character.isUpperCase(word.charAt(0))){
-                    capLetCount++;
-                }
-            }
-            values.add((double)capLetCount/article.getWords().size());
+            CapitalLetterExtractor clExtractor = new CapitalLetterExtractor();
+            values.addAll(clExtractor.extract(article));
 
             // unique words
-            int uniqueCount = new HashSet<>(article.getWords()).size();
-            values.add((double)uniqueCount/article.getWords().size());
+            UniqueWordsextractor uwExtractor = new UniqueWordsextractor();
+            values.addAll(uwExtractor.extract(article));
 
             // long words
-            long longWordCount = article.getWords().stream().filter(w -> w.length() > longWordLength).count();
-            values.add((double)longWordCount/article.getWords().size());
+            values.addAll(wlExtractor.extract(article));
 
             // save features
             ClassificationObject cObj = new ClassificationObject();
@@ -164,7 +139,7 @@ public class DocumentCollection {
         return classificationObjects;
     }
 
-    public int getLongWordLength(){
+    public WordLengthExtractor makeWordLengthExtractor(){
         List<Integer> lengths = new ArrayList<>();
         for(Article article : articles){
             for(String word : article.getWords()){
@@ -173,15 +148,10 @@ public class DocumentCollection {
             }
         }
         lengths.sort(Integer::compareTo);
-        return lengths.get(Math.round(0.8f*lengths.size()));
+        return new WordLengthExtractor(lengths.get(Math.round(0.8f*lengths.size())));
     }
 
-    /**
-     * Make keywords for each label in collection
-     * @param settings needed to get extracting method and keywords count
-     * @return list of fuzzy sets of keywords
-     */
-    public List<FuzzySet<String>> makeKeywords(Settings settings) {
+    public KeywordExtractor makeKeywordExtractor(Settings settings) {
         Map<String, List<Article>> articlesSets = new HashMap<>();
         for(Article article : this.articles){
             if(settings.category == Settings.Category.Places){
@@ -197,53 +167,6 @@ public class DocumentCollection {
             }
         }
 
-        Function<List<Article>, Map<String, Double>> wordStat = makeWordStat(settings.trainingMethod);
-        return extractKeywords(articlesSets, settings.keywordsCount, wordStat);
-    }
-
-    private Function<List<Article>, Map<String, Double>> makeWordStat(Settings.Method trainingMethod) {
-        switch (trainingMethod){
-            case TF:
-                return DocumentCollectionStats::termFrequency;
-            case TFIDF:
-                return (artList) -> {
-                    Map<String, Double> tfs = termFrequency(artList);
-                    Map<String, Double> idfs = inverseDocumentFrequency(artList);
-                    for(Map.Entry<String, Double> tf : tfs.entrySet()){
-                        tfs.replace(tf.getKey(), idfs.get(tf.getKey())*tf.getValue());
-                    }
-                    return tfs;
-                };
-            case ROne:
-                // TODO: implement
-                // https://pdfs.semanticscholar.org/03af/c233b07d0fdfbab169fae5dfd44e7e0fc1b9.pdf
-                throw new RuntimeException("i will implement it in a moment");
-            default:
-                throw new IllegalArgumentException("Invalid training method");
-        }
-    }
-
-    private List<FuzzySet<String>> extractKeywords(Map<String, List<Article>> articlesSets, int keywordsCount,
-                                                          Function<List<Article>, Map<String, Double>> wordStat){
-        List<FuzzySet<String>> result = new ArrayList<>();
-        for(Map.Entry<String, List<Article>> articleSet : articlesSets.entrySet()){
-            FuzzySet<String> keywordsSet = new FuzzySet<>();
-            Map<String, Double> tfs = wordStat.apply(articleSet.getValue());
-            // sort in order from greatest to smallest term frequency
-            SortedSet<Map.Entry<String, Double>> sortedTfs;
-            sortedTfs = new TreeSet<>(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()));
-            sortedTfs.addAll(tfs.entrySet());
-            // get first N results
-            int counter = 0;
-            for (Map.Entry<String, Double> entry : sortedTfs) {
-                keywordsSet.add(entry.getKey(), entry.getValue());
-                counter++;
-                if(counter == keywordsCount){
-                    break;
-                }
-            }
-            result.add(keywordsSet);
-        }
-        return result;
+        return new KeywordExtractor(articlesSets.values(), settings.trainingMethod);
     }
 }

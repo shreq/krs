@@ -88,7 +88,7 @@ public class Settings {
         return result;
     }
 
-    enum Method{
+    public enum Method{
         TF,
         TFIDF,
         ROne

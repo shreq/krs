@@ -30,6 +30,10 @@ public class DocumentCollectionStats {
         return counter;
     }
 
+    public static Map<String, Double> inverseDocumentFrequency(Article article){
+        return inverseDocumentFrequency(Collections.singletonList(article));
+    }
+
     /**
      * Term frequency
      * @param articles list of articles
@@ -50,5 +54,9 @@ public class DocumentCollectionStats {
             counter.replace(wordAndCount.getKey(), wordAndCount.getValue()/wordCount);
         }
         return counter;
+    }
+
+    public static Map<String, Double> termFrequency(Article article){
+        return termFrequency(Collections.singletonList(article));
     }
 }

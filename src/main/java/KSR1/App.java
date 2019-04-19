@@ -4,6 +4,8 @@ import KSR1.Knn.ClassificationObject;
 import KSR1.Knn.KnnClassifier;
 import KSR1.Preprocessing.LancasterStemmer;
 
+import KSR1.Processing.KeywordExtractor;
+import KSR1.Processing.WordLengthExtractor;
 import org.apache.commons.math3.ml.distance.ChebyshevDistance;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
@@ -43,15 +45,15 @@ public class App {
         documents.preprocess(new LancasterStemmer());
 
         DocumentCollection trainingDocuments = documents.splitGetSubset(settings.trainingPercent);
-        final List<FuzzySet<String>> keywordSets = trainingDocuments.makeKeywords(settings);
-        final int longWordLength = trainingDocuments.getLongWordLength();
+        final KeywordExtractor kwExtractor = trainingDocuments.makeKeywordExtractor(settings);
+        final WordLengthExtractor wlExtractor = trainingDocuments.makeWordLengthExtractor();
 
-        List<ClassificationObject> trainingObjects = trainingDocuments.extractClassificationObjects(settings, keywordSets, longWordLength);
+        List<ClassificationObject> trainingObjects = trainingDocuments.extractClassificationObjects(settings, kwExtractor, wlExtractor);
         KnnClassifier classifier = makeClassifier(settings, trainingObjects);
 
         Map<String, Map<String, Integer>> results = makeResultsArray(settings);
 
-        List<ClassificationObject> testObjects = documents.extractClassificationObjects(settings, keywordSets, longWordLength);
+        List<ClassificationObject> testObjects = documents.extractClassificationObjects(settings, kwExtractor, wlExtractor);
         for(ClassificationObject object : testObjects){
             String actualClass = classifier.classifyObject(object);
             String expectedClass = object.getLabel();
