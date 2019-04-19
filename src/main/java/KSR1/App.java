@@ -4,8 +4,7 @@ import KSR1.Knn.ClassificationObject;
 import KSR1.Knn.KnnClassifier;
 import KSR1.Preprocessing.LancasterStemmer;
 
-import KSR1.Processing.KeywordExtractor;
-import KSR1.Processing.WordLengthExtractor;
+import KSR1.Processing.*;
 import org.apache.commons.math3.ml.distance.ChebyshevDistance;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
@@ -45,15 +44,18 @@ public class App {
         documents.preprocess(new LancasterStemmer());
 
         DocumentCollection trainingDocuments = documents.splitGetSubset(settings.trainingPercent);
-        final KeywordExtractor kwExtractor = trainingDocuments.makeKeywordExtractor(settings);
-        final WordLengthExtractor wlExtractor = trainingDocuments.makeWordLengthExtractor();
+        List<FeatureExtractor> featureExtractors = new ArrayList<>();
+        featureExtractors.add(trainingDocuments.makeKeywordExtractor(settings));
+        featureExtractors.add(trainingDocuments.makeWordLengthExtractor());
+        featureExtractors.add(new CapitalLetterExtractor());
+        featureExtractors.add(new UniqueWordsextractor());
 
-        List<ClassificationObject> trainingObjects = trainingDocuments.extractClassificationObjects(settings, kwExtractor, wlExtractor);
+        List<ClassificationObject> trainingObjects = trainingDocuments.extractClassificationObjects(settings, featureExtractors);
         KnnClassifier classifier = makeClassifier(settings, trainingObjects);
 
         Map<String, Map<String, Integer>> results = makeResultsArray(settings);
 
-        List<ClassificationObject> testObjects = documents.extractClassificationObjects(settings, kwExtractor, wlExtractor);
+        List<ClassificationObject> testObjects = documents.extractClassificationObjects(settings, featureExtractors);
         for(ClassificationObject object : testObjects){
             String actualClass = classifier.classifyObject(object);
             String expectedClass = object.getLabel();
@@ -123,14 +125,7 @@ public class App {
 
     private static Map<String, Map<String, Integer>> makeResultsArray(Settings settings) {
         Map<String, Map<String, Integer>> result = new HashMap<>();
-        Set<String> categories;
-        if(settings.category == Settings.Category.Places){
-            categories = DocumentCollection.allowedPlaces;
-        }else if(settings.category == Settings.Category.Orgs){
-            categories = DocumentCollection.allowedOrgs;
-        }else {
-            throw new IllegalArgumentException("Invalid category");
-        }
+        Set<String> categories = Article.getAllLabels(settings.category);
         for(String category : categories){
             Map<String, Integer> inner = new HashMap<>();
             for(String inCat : categories){
