@@ -21,6 +21,10 @@ public class DocumentCollection {
         articles = new ArrayList<>();
     }
 
+    private DocumentCollection(String filePath) throws FileNotFoundException {
+        this(Collections.singletonList(filePath));
+    }
+
     public DocumentCollection(List<String> filePaths) throws FileNotFoundException {
         articles = new ArrayList<>();
         for(String path : filePaths){

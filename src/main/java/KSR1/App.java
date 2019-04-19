@@ -32,7 +32,7 @@ public class App {
 
         DocumentCollection documents = null;
         try {
-//            documents = new DocumentCollection(Collections.singletonList("src/main/resources/reuters/reut2-017.sgm"));
+//            documents = new DocumentCollection("src/main/resources/reuters/reut2-017.sgm");
             documents = new DocumentCollection(reutFiles);
         } catch (FileNotFoundException e) {
             System.exit(EXIT_IO);

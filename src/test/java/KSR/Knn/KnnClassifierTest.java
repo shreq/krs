@@ -3,7 +3,7 @@ package KSR.Knn;
 import KSR1.Knn.ClassificationObject;
 import KSR1.Knn.KnnClassifier;
 import org.apache.commons.math3.ml.distance.ChebyshevDistance;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -29,7 +29,7 @@ public class Article {
         if(wordlist != null){
             return wordlist;
         }
-        ArrayList<String> textArray = new ArrayList<>(Arrays.asList(text.split(",?\\s+|,|/|'")));
+        ArrayList<String> textArray = new ArrayList<>(Arrays.asList(text.split(",?\\s+|,|/")));
         String previous = textArray.get(0);
         textArray.set(0, stripRight(previous.toLowerCase()));
 

@@ -45,14 +45,14 @@ public class SGMFile {
                 if(!matcher.find() || matcher.groupCount() != 1 || matcher.group(1) == null){
                     continue;
                 }
-                article.title = matcher.group(1);
+                article.title = matcher.group(1).replaceAll("[<>]", "");
                 // endregion
                 // region parse body
                 matcher = bodyPattern.matcher(articleString);
                 if(!matcher.find() || matcher.groupCount() != 1 || matcher.group(1) == null){
                     continue;
                 }
-                article.setText(matcher.group(1).replace("\"", ""));
+                article.setText(matcher.group(1).replace("\"", "").replaceAll("[<>]", ""));
                 // endregion
                 result.articles.add(article);
             } catch (IllegalStateException ex){
@@ -76,7 +76,7 @@ public class SGMFile {
         return text.replaceAll("&lt;(.*?)&gt;", "$1")
                 .replace("&amp;", "&")
                 .replace("&apos;", "'")
-                .replaceAll("&#\\d+;|' | '|\\.\\.\\.|&quot;|[-;:+&$()%^*]", " ")
+                .replaceAll("&#\\d+;|&[a-z]{2,4};|' | '|\\.\\.\\.|&quot;|[-;:+&$()%^*]", " ")
                 .replaceAll("[?!.]", ". ")
                 .replaceAll("\\d+[a-zA-Z]+|[a-zA-Z]\\d+", " ")
                 .replaceAll("\\s+", " ");
