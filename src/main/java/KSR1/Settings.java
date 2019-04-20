@@ -127,7 +127,7 @@ public class Settings {
         }
     }
 
-    enum Category {
+    public enum Category {
         Places,
         Orgs,
         Course,

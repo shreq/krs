@@ -1,4 +1,4 @@
-package KSR1.Processing;
+package KSR1.Extractors;
 
 import KSR1.Article;
 

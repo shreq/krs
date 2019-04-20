@@ -1,9 +1,11 @@
 package KSR1;
 
+import KSR1.Extractors.FeatureExtractor;
+import KSR1.Extractors.KeywordExtractor;
+import KSR1.Extractors.WordLengthExtractor;
 import KSR1.Knn.ClassificationObject;
 import KSR1.Preprocessing.Stemmer;
 import KSR1.Preprocessing.StopWordFilter;
-import KSR1.Processing.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
