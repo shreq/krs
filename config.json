@@ -4,7 +4,7 @@
   },
   "training": {
     "keywordsCount": 15,
-    "method": "tfidf"
+    "method": "idf"
   },
   "knnParams": {
     "k": 13,

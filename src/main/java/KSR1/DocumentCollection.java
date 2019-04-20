@@ -111,6 +111,6 @@ public class DocumentCollection {
             articlesSets.get(label).add(article);
         }
 
-        return new KeywordExtractor(articlesSets.values(), settings.trainingMethod);
+        return new KeywordExtractor(articlesSets.values(), settings.trainingMethod, settings.keywordsCount);
     }
 }

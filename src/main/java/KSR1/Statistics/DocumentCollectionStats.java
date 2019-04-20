@@ -7,11 +7,11 @@ import java.util.*;
 public class DocumentCollectionStats {
 
     /**
-     * Inverse document frequency
+     * Document frequency
      * @param articles list of articles
-     * @return map of IDF for each word
+     * @return map of DF for each word
      */
-    public static Map<String, Double> inverseDocumentFrequency(List<Article> articles){
+    public static Map<String, Double> documentFrequency(List<Article> articles){
         Map<String, Double> counter = new HashMap<>();
         int documentCount = 0;
         for(Article article : articles){
@@ -25,9 +25,23 @@ public class DocumentCollectionStats {
         }
 
         for(Map.Entry<String, Double> wordCount : counter.entrySet()){
-            counter.replace(wordCount.getKey(), Math.log(documentCount/wordCount.getValue()));
+            counter.replace(wordCount.getKey(), wordCount.getValue()/documentCount);
         }
         return counter;
+    }
+
+    /**
+     * Inverse document frequency
+     * @param articles list of articles
+     * @return map of IDF for each word
+     */
+    public static Map<String, Double> inverseDocumentFrequency(List<Article> articles){
+        Map<String, Double> dfs = documentFrequency(articles);
+
+        for(Map.Entry<String, Double> df : dfs.entrySet()){
+            dfs.replace(df.getKey(), Math.log(1/df.getValue()));
+        }
+        return dfs;
     }
 
     public static Map<String, Double> inverseDocumentFrequency(Article article){

@@ -58,8 +58,8 @@ public class Settings {
             }
         }
         if(training == null || !training.containsKey("method")){
-            LOGGER.log(Level.INFO, "No training.trainingMethod found - setting to default value: tf-idf");
-            result.trainingMethod = Method.TFIDF;
+            LOGGER.log(Level.INFO, "No training.trainingMethod found - setting to default value: idf");
+            result.trainingMethod = Method.IDF;
         }else{
             result.trainingMethod = methodFromString(training.get("method").toString());
         }
@@ -90,19 +90,19 @@ public class Settings {
 
     public enum Method{
         TF,
-        TFIDF,
-        ROne
+        IDF,
+        DFRatio
     }
 
     private static Method methodFromString(String str){
-        switch (str){
+        switch (str.toLowerCase()){
             case "tf":
                 return Method.TF;
-            case "tfidf":
-                return Method.TFIDF;
-            case "r1":
-            case "r-one":
-                return Method.ROne;
+            case "idf":
+                return Method.IDF;
+            case "dfratio":
+            case "df-ratio":
+                return Method.DFRatio;
             default:
                 throw new IllegalArgumentException("Invalid method");
         }
