@@ -1,8 +1,6 @@
 package KSR1;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class Article {
     String type;
@@ -13,6 +11,16 @@ public class Article {
     List<String> orgs = new ArrayList<String>();
     List<String> places = new ArrayList<String>();
     private ArrayList<String> wordlist = null;
+
+    private static final Map<Settings.Category, Set<String>> allowedLabels = new HashMap<>();
+
+    static {
+        allowedLabels.put(Settings.Category.Places, new HashSet<>(Arrays.asList("usa", "france", "uk", "canada", "japan")));
+        allowedLabels.put(Settings.Category.Orgs, new HashSet<>(Arrays.asList("ec", "worldbank", "imf", "opec", "icco")));
+        allowedLabels.put(Settings.Category.Course, new HashSet<>());
+        allowedLabels.put(Settings.Category.Type, new HashSet<>());
+    }
+
     /**
      * Get all words from text. First word in sentence is converted to lower case.
      * @return list of words
@@ -21,7 +29,7 @@ public class Article {
         if(wordlist != null){
             return wordlist;
         }
-        ArrayList<String> textArray = new ArrayList<>(Arrays.asList(text.split(",?\\s+|,|/|'")));
+        ArrayList<String> textArray = new ArrayList<>(Arrays.asList(text.split(",?\\s+|,|/")));
         String previous = textArray.get(0);
         textArray.set(0, stripRight(previous.toLowerCase()));
 
@@ -55,32 +63,36 @@ public class Article {
         return word;
     }
 
-    @Override
-    public String toString() {
-        return "Article(" +
-                "orgs=" + orgs.toString() +
-                ", places=" + places.toString() +
-                ", title=" + title + ")";
-    }
-
     public String getTitle() {
         return title;
     }
 
-    public List<String> getOrgs() {
-        return orgs;
+    public String getLabel(Settings.Category category){
+        switch (category){
+            case Orgs:
+                return orgs.get(0);
+            case Places:
+                return places.get(0);
+            case Type:
+                return type;
+            case Course:
+                return course;
+            default:
+                throw new RuntimeException("Unknown category");
+        }
     }
 
-    public List<String> getPlaces() {
-        return places;
+    public static Set<String> getAllLabels(Settings.Category category) {
+        return allowedLabels.get(category);
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public String getCourse() {
-        return course;
+    public boolean isGood(Settings.Category category){
+        if(category == Settings.Category.Orgs && orgs.size() != 1){
+            return false;
+        }else if(category == Settings.Category.Places && places.size() != 1){
+            return false;
+        }
+        return allowedLabels.get(category).contains(getLabel(category));
     }
 
     public void setText(String text){

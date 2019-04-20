@@ -3,9 +3,8 @@ package KSR.Statistics;
 import KSR1.Article;
 import KSR1.Statistics.DocumentCollectionStats;
 
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -16,7 +15,7 @@ import java.util.Arrays;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
-public class DocumentCollectionStatsTest {
+class DocumentCollectionStatsTest {
     @Mock
     Article article1;
     @Mock
@@ -24,15 +23,15 @@ public class DocumentCollectionStatsTest {
 
     ArrayList<Article> collection;
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         MockitoAnnotations.initMocks(this);
         collection = new ArrayList<>(Arrays.asList(article1, article2));
     }
 
     @Test
     @DisplayName("Should return proper values when queried for IDF with exact comparison")
-    public void shouldReturnProperValueExactIDF() {
+    void shouldReturnProperValueExactIDF() {
         when(article1.getWords()).thenReturn(new ArrayList<>(Arrays.asList("abc", "xyz")));
         when(article2.getWords()).thenReturn(new ArrayList<>(Arrays.asList("abc", "klm")));
 
@@ -45,7 +44,7 @@ public class DocumentCollectionStatsTest {
 
     @Test
     @DisplayName("Should return proper values when queried for TF with exact comparison")
-    public void shouldReturnProperValueExactTF() {
+    void shouldReturnProperValueExactTF() {
         when(article1.getWords()).thenReturn(new ArrayList<>(Arrays.asList("abc", "xyz")));
         when(article2.getWords()).thenReturn(new ArrayList<>(Arrays.asList("abc", "klm")));
 

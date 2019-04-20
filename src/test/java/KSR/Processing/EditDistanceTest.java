@@ -1,7 +1,7 @@
 package KSR.Processing;
 
 import KSR1.Processing.EditDistance;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,49 +12,49 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class EditDistanceTest {
 
-    private EditDistance distanceCalculator;
+    private EditDistance similarity;
 
     @BeforeEach
     void SetUp(){
-        distanceCalculator = new EditDistance();
+        similarity = new EditDistance();
     }
 
     @Test
-    @DisplayName("Should return 0 on equal strings")
+    @DisplayName("Should return 1 on equal strings")
     void shouldReturnZero(){
         //given
         String A = "Lorem ipsum 123";
         String B = "Lorem ipsum 123";
         //when
-        double distance = distanceCalculator.compare(A, B);
+        double sim = similarity.compare(A, B);
         //then
-        assertEquals(0, distance);
+        assertEquals(1, sim, .000001);
     }
 
 
     @ParameterizedTest
     @MethodSource("getCases")
     @DisplayName("Should return correct answer")
-    void shouldReturnAnswer(String word1, String word2, int expected){
+    void shouldReturnAnswer(String word1, String word2, double expected){
         //given
         //when
-        double distance = distanceCalculator.compare(word1, word2);
+        double sim = similarity.compare(word1, word2);
         //then
-        assertEquals(expected, distance);
+        assertEquals(expected, sim, .000001);
     }
 
     private static Object[] getCases(){
-        return $($("abc", "abcd", 1/4.),
-                 $("abcd", "abc", 1/4.),
-                 $("abcd", "abce", 1/4.),
-                 $("xabc", "abcx", 2),
-                 $("abxcd", "abcxde", 3),
-                 $("abcdefg", "uwxyzab", 7),
-                 $("abcdefg", "kmlnopr", 7),
-                 $("abcdef", "kmlnop", 6),
-                 $("abcde", "kmlno", 5),
-                 $("abcd", "kmln", 4),
-                 $("a", "b", 1),
-                 $("xyabc", "abcxy", 4));
+        return $($("abc", "abcd", .75),
+                 $("abcd", "abc", .75),
+                 $("abcd", "abce", .75),
+                 $("xabc", "abcx", .5),
+                 $("abxcd", "abcxde", .5),
+                 $("abcdefg", "uwxyzab", 0),
+                 $("abcdefg", "kmlnopr", 0),
+                 $("abcdef", "kmlnop", 0),
+                 $("abcde", "kmlno", 0),
+                 $("abcd", "kmln", 0),
+                 $("a", "b", 0),
+                 $("xyabc", "abcxy", .2));
     }
 }

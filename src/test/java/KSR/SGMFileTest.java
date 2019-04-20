@@ -22,7 +22,7 @@ class SGMFileTest {
         assertThat(sgm.articles)
                 .hasSize(2)
                 .extracting(Article::getTitle)
-                .containsExactly("BAHIA COCOA REVIEW", "STANDARD OIL <SRD> TO FORM FINANCIAL UNIT");
+                .containsExactly("BAHIA COCOA REVIEW", "STANDARD OIL SRD TO FORM FINANCIAL UNIT");
     }
 
     @Test

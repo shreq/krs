@@ -1,9 +1,13 @@
 package KSR1;
 
+import KSR1.Extractors.CapitalLetterExtractor;
+import KSR1.Extractors.FeatureExtractor;
+import KSR1.Extractors.UniqueWordsextractor;
 import KSR1.Knn.ClassificationObject;
 import KSR1.Knn.KnnClassifier;
 import KSR1.Preprocessing.LancasterStemmer;
 
+import KSR1.Statistics.Results;
 import org.apache.commons.math3.ml.distance.ChebyshevDistance;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
@@ -14,7 +18,6 @@ import javax.naming.ConfigurationException;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
-import java.util.stream.Collectors;
 
 public class App {
 
@@ -32,7 +35,7 @@ public class App {
 
         DocumentCollection documents = null;
         try {
-//            documents = new DocumentCollection(Collections.singletonList("src/main/resources/reuters/reut2-017.sgm"));
+//            documents = new DocumentCollection("src/main/resources/reuters/reut2-017.sgm");
             documents = new DocumentCollection(reutFiles);
         } catch (FileNotFoundException e) {
             System.exit(EXIT_IO);
@@ -44,100 +47,26 @@ public class App {
         documents.preprocess(new LancasterStemmer());
 
         DocumentCollection trainingDocuments = documents.splitGetSubset(settings.trainingPercent);
-        final List<FuzzySet<String>> keywordSets = trainingDocuments.makeKeywords(settings);
-        final int longWordLength = trainingDocuments.getLongWordLength();
+        List<FeatureExtractor> featureExtractors = new ArrayList<>();
+        featureExtractors.add(trainingDocuments.makeKeywordExtractor(settings));
+        featureExtractors.add(trainingDocuments.makeWordLengthExtractor());
+        featureExtractors.add(new CapitalLetterExtractor());
+        featureExtractors.add(new UniqueWordsextractor());
 
-        List<ClassificationObject> trainingObjects = trainingDocuments.extractClassificationObjects(settings, keywordSets, longWordLength);
+        List<ClassificationObject> trainingObjects = trainingDocuments.extractClassificationObjects(settings, featureExtractors);
         KnnClassifier classifier = makeClassifier(settings, trainingObjects);
 
-        Map<String, Map<String, Integer>> results = makeResultsArray(settings);
+        Results results = new Results(settings.category);
 
-        List<ClassificationObject> testObjects = documents.extractClassificationObjects(settings, keywordSets, longWordLength);
+        List<ClassificationObject> testObjects = documents.extractClassificationObjects(settings, featureExtractors);
         for(ClassificationObject object : testObjects){
             String actualClass = classifier.classifyObject(object);
             String expectedClass = object.getLabel();
-            Map<String, Integer> innerMap = results.get(expectedClass);
-            innerMap.put(actualClass, innerMap.get(actualClass) + 1);
-            results.put(expectedClass, innerMap);
+            results.add(expectedClass, actualClass);
         }
 
         System.out.println(results);
-        printResults(results);
-        System.out.println();
-        printStats(results);
-    }
-
-    private static void printStats(Map<String, Map<String, Integer>> results) {
-        List<Integer> accVals = new ArrayList<>();
-        Map<String, Integer> precVals = new HashMap<>();
-        Map<String, Integer> precValsSpec = new HashMap<>();
-
-        int count = 0;
-        for(Map.Entry<String, Map<String, Integer>> row : results.entrySet()){
-            for(int val : row.getValue().values()){
-                count += val;
-            }
-            accVals.add(row.getValue().get(row.getKey()));
-            precValsSpec.put(row.getKey(), row.getValue().get(row.getKey()));
-            for(Map.Entry<String, Integer> col : row.getValue().entrySet()){
-                int pCount = precVals.getOrDefault(col.getKey(), 0);
-                precVals.put(col.getKey(), pCount + col.getValue());
-            }
-        }
-        int accSum = 0;
-        for(int val : accVals){
-            accSum += val;
-        }
-        System.out.println("Accuracy = " + (double)accSum/count);
-
-        double pSumm = 0;
-        for(Map.Entry<String, Integer> p : precVals.entrySet()){
-            pSumm += (double)precValsSpec.get(p.getKey())/p.getValue();
-        }
-        pSumm /= 5;
-        System.out.println("Precision = " + pSumm);
-    }
-
-    private static void printResults(Map<String, Map<String, Integer>> res){
-        Map<String, Integer> counter = new HashMap<>();
-
-        System.out.print("       ");
-        for(String rowLabel : res.keySet()){
-            System.out.print(String.format("%-7s", rowLabel));
-        }
-        System.out.println();
-        for(Map.Entry<String, Map<String, Integer>> row : res.entrySet()){
-            int count = 0;
-            for(int val : row.getValue().values()){
-                count += val;
-            }
-
-            System.out.print(String.format("%-7s", row.getKey()));
-            for(int val : row.getValue().values()){
-                System.out.print(String.format("%-7.3f", (double)val/count));
-            }
-            System.out.println();
-        }
-    }
-
-    private static Map<String, Map<String, Integer>> makeResultsArray(Settings settings) {
-        Map<String, Map<String, Integer>> result = new HashMap<>();
-        Set<String> categories;
-        if(settings.category == Settings.Category.Places){
-            categories = DocumentCollection.allowedPlaces;
-        }else if(settings.category == Settings.Category.Orgs){
-            categories = DocumentCollection.allowedOrgs;
-        }else {
-            throw new IllegalArgumentException("Invalid category");
-        }
-        for(String category : categories){
-            Map<String, Integer> inner = new HashMap<>();
-            for(String inCat : categories){
-                inner.put(inCat, 0);
-            }
-            result.put(category, inner);
-        }
-        return result;
+        System.out.println(results.stats());
     }
 
     private static KnnClassifier makeClassifier(Settings settings, List<ClassificationObject> articles){
