@@ -108,4 +108,18 @@ public class FuzzySet<ElemType> {
     public void clear() {
         set.clear();
     }
+
+    public FuzzySet<ElemType> persistAllCopy(Collection<ElemType> set) {
+        FuzzySet<ElemType> result = new FuzzySet<>();
+        for(ElemType elem : set){
+            if(this.set.containsKey(elem)){
+                result.set.put(elem, this.set.get(elem));
+            }
+        }
+        return result;
+    }
+
+    public Collection<Double> values() {
+        return set.values();
+    }
 }

@@ -78,8 +78,33 @@ public class KeywordExtractor implements FeatureExtractor {
 
         FuzzySet<String> termSet = new FuzzySet<>(termFrequency(article));
         for(FuzzySet<String> keywords : keywordsList){
-            values.add(FuzzySet.jaccardSimilarity(termSet, keywords));
-            values.add(FuzzySet.cosAmpSimilarity(termSet, keywords));
+            // we assume that for keywords universe equals supports i.e. each element has membership > 0
+            // copy of $termSet containing only values that appear in $keywords
+            FuzzySet<String> tmpSet = termSet.persistAllCopy(keywords.universe());
+
+            // did all keywords appeared
+            values.add(tmpSet.support().size() == keywords.universe().size() ? 1. : 0.);
+            // percent of keywords that appeared
+            values.add((double)tmpSet.support().size()/keywords.universe().size());
+            // max term frequency
+            values.add(Collections.max(tmpSet.values()));
+            // min term frequency
+            values.add(Collections.min(tmpSet.values()));
+            // mean term frequency
+            double mean = tmpSet.values().stream().reduce(Double::sum).get();
+            mean /= tmpSet.universe().size();
+            values.add(mean);
+            // standard deviation of TF
+            double variance = 0;
+            for (double x : tmpSet.values()) {
+                variance += Math.pow(x - mean, 2);
+            }
+            values.add(Math.sqrt(variance));
+
+            // TODO: add more
+
+            values.add(FuzzySet.jaccardSimilarity(tmpSet, keywords));
+            values.add(FuzzySet.cosAmpSimilarity(tmpSet, keywords));
         }
         return values;
     }
