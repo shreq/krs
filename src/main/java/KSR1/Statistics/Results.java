@@ -69,6 +69,9 @@ public class Results {
         }
     }
 
+    /**
+     * https://www.jakbadacdane.pl/accuracy-precision-recall-f1-co-to-za-czary/
+     */
     public Map<String, Double> stats() {
         Map<String, Double> results = new HashMap<>();
 
@@ -93,8 +96,20 @@ public class Results {
         }
 
         // TODO: calculate actual values based on rowSums, colSums and diagVals
-        results.put("accuracy", 0.);
-        results.put("precision", 0.);
+        results.put("accuracy", (double)diagVals.values().stream().reduce(Integer::sum).get()/allCount);
+        double precision = 0;
+        for(String key : diagVals.keySet()){
+            precision += (double)diagVals.get(key)/colSums.get(key);
+        }
+        precision /= diagVals.size();
+        results.put("precision", precision);
+        double recall = 0;
+        for(String key : diagVals.keySet()){
+            recall += (double)diagVals.get(key)/rowSums.get(key);
+        }
+        recall /= diagVals.size();
+        results.put("recall", recall);
+        results.put("f1", 2*(precision*recall)/(precision+recall));
 
         return results;
     }

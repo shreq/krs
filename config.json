@@ -3,12 +3,12 @@
     "trainingPercent": 60
   },
   "training": {
-    "keywordsCount": 15,
-    "method": "idf"
+    "keywordsCount": 35,
+    "method": "dfratio"
   },
   "knnParams": {
-    "k": 13,
+    "k": 7,
     "distanceMetric": "euclidean"
   },
-  "category": "orgs"
+  "category": "places"
 }

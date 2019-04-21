@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
-public class UniqueWordsextractor implements FeatureExtractor {
+public class UniqueWordsExtractor implements FeatureExtractor {
     @Override
     public List<Double> extract(Article article) {
         int uniqueCount = new HashSet<>(article.getWords()).size();
