@@ -2,11 +2,11 @@ package KSR1;
 
 import KSR1.Extractors.CapitalLetterExtractor;
 import KSR1.Extractors.FeatureExtractor;
-import KSR1.Extractors.UniqueWordsextractor;
+import KSR1.Extractors.UniqueWordsExtractor;
 import KSR1.Knn.ClassificationObject;
 import KSR1.Knn.KnnClassifier;
-import KSR1.Preprocessing.LancasterStemmer;
 
+import KSR1.Preprocessing.SnowballStemmer;
 import KSR1.Statistics.Results;
 import org.apache.commons.math3.ml.distance.ChebyshevDistance;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
@@ -44,14 +44,14 @@ public class App {
 
         documents.filterCategory(settings.category);
         LOGGER.log(Level.INFO, "{0} articles after filtering", documents.articles.size());
-        documents.preprocess(new LancasterStemmer());
+        documents.preprocess(new SnowballStemmer());
 
         DocumentCollection trainingDocuments = documents.splitGetSubset(settings.trainingPercent);
         List<FeatureExtractor> featureExtractors = new ArrayList<>();
         featureExtractors.add(trainingDocuments.makeKeywordExtractor(settings));
         featureExtractors.add(trainingDocuments.makeWordLengthExtractor());
         featureExtractors.add(new CapitalLetterExtractor());
-        featureExtractors.add(new UniqueWordsextractor());
+        featureExtractors.add(new UniqueWordsExtractor());
 
         List<ClassificationObject> trainingObjects = trainingDocuments.extractClassificationObjects(settings, featureExtractors);
         KnnClassifier classifier = makeClassifier(settings, trainingObjects);
@@ -67,6 +67,7 @@ public class App {
 
         System.out.println(results);
         System.out.println(results.stats());
+        LOGGER.info("END");
     }
 
     private static KnnClassifier makeClassifier(Settings settings, List<ClassificationObject> articles){

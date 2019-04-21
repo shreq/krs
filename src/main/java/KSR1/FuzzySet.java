@@ -1,6 +1,7 @@
 package KSR1;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FuzzySet<ElemType> {
 
@@ -33,6 +34,9 @@ public class FuzzySet<ElemType> {
         double norm2 = 0.0;
 
         int size = Integer.min(values1.size(), values2.size());
+        if(size == 0){
+            return 0.;
+        }
         for (int i = 0; i < size; i++) {
             dot += values1.get(i) * values2.get(i);
             norm1 += Math.pow(values1.get(i), 2);
@@ -64,8 +68,12 @@ public class FuzzySet<ElemType> {
         return result;
     }
 
-    public Set<ElemType> support() {
+    public Set<ElemType> universe() {
         return set.keySet();
+    }
+
+    public Set<ElemType> support() {
+        return set.entrySet().stream().filter(e -> e.getValue() > 0).map(Map.Entry::getKey).collect(Collectors.toSet());
     }
 
     public double cardinality(){
@@ -102,5 +110,19 @@ public class FuzzySet<ElemType> {
 
     public void clear() {
         set.clear();
+    }
+
+    public FuzzySet<ElemType> persistAllCopy(Collection<ElemType> set) {
+        FuzzySet<ElemType> result = new FuzzySet<>();
+        for(ElemType elem : set){
+            if(this.set.containsKey(elem)){
+                result.set.put(elem, this.set.get(elem));
+            }
+        }
+        return result;
+    }
+
+    public Collection<Double> values() {
+        return set.values();
     }
 }

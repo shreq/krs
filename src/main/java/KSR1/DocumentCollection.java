@@ -23,7 +23,7 @@ public class DocumentCollection {
         articles = new ArrayList<>();
     }
 
-    private DocumentCollection(String filePath) throws FileNotFoundException {
+    public DocumentCollection(String filePath) throws FileNotFoundException {
         this(Collections.singletonList(filePath));
     }
 
@@ -90,15 +90,7 @@ public class DocumentCollection {
     }
 
     public WordLengthExtractor makeWordLengthExtractor(){
-        List<Integer> lengths = new ArrayList<>();
-        for(Article article : articles){
-            for(String word : article.getWords()){
-                int len = word.length();
-                lengths.add(len);
-            }
-        }
-        lengths.sort(Integer::compareTo);
-        return new WordLengthExtractor(lengths.get(Math.round(0.8f*lengths.size())));
+        return new WordLengthExtractor(articles);
     }
 
     public KeywordExtractor makeKeywordExtractor(Settings settings) {
@@ -111,6 +103,6 @@ public class DocumentCollection {
             articlesSets.get(label).add(article);
         }
 
-        return new KeywordExtractor(articlesSets.values(), settings.trainingMethod);
+        return new KeywordExtractor(articlesSets.values(), settings.trainingMethod, settings.keywordsCount);
     }
 }
