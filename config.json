@@ -7,8 +7,8 @@
     "method": "dfratio"
   },
   "knnParams": {
-    "k": 7,
-    "distanceMetric": "euclidean"
+    "k": 15,
+    "distanceMetric": "chebyshev"
   },
   "category": "places"
 }

@@ -2,9 +2,11 @@ package KSR1.Statistics;
 
 import KSR1.Article;
 import KSR1.Settings;
-import com.sun.javafx.collections.MappingChange;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 public class Results {
 
