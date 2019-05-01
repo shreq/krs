@@ -6,9 +6,12 @@ import KSR1.Extractors.WordLengthExtractor;
 import KSR1.Knn.ClassificationObject;
 import KSR1.Preprocessing.Stemmer;
 import KSR1.Preprocessing.StopWordFilter;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,8 +26,23 @@ public class DocumentCollection {
         articles = new ArrayList<>();
     }
 
-    public DocumentCollection(String filePath) throws FileNotFoundException {
+    /*public DocumentCollection(String filePath) throws FileNotFoundException {
         this(Collections.singletonList(filePath));
+    }*/
+
+    public DocumentCollection(String filePath) throws IOException, SAXException, ParserConfigurationException {
+        articles = new ArrayList<>();
+
+        File file = new File(filePath);
+        XMLFile xml;
+        try {
+            xml = XMLFile.loadFile(file);
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            LOGGER.log(Level.SEVERE, "File {0} cannot be read ", file);
+            throw ex;
+        }
+
+        articles.addAll(xml.articles);
     }
 
     public DocumentCollection(List<String> filePaths) throws FileNotFoundException {

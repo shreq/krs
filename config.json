@@ -3,12 +3,12 @@
     "trainingPercent": 60
   },
   "training": {
-    "keywordsCount": 35,
-    "method": "dfratio"
+    "keywordsCount": 2,
+    "method": "idf"
   },
   "knnParams": {
-    "k": 15,
-    "distanceMetric": "chebyshev"
+    "k": 2,
+    "distanceMetric": "manhattan"
   },
-  "category": "orgs"
+  "category": "course"
 }

@@ -140,6 +140,10 @@ public class Settings {
                 return Category.Places;
             case "orgs":
                 return Category.Orgs;
+            case "course":
+                return Category.Course;
+            case "type":
+                return Category.Type;
             default:
                 throw new IllegalArgumentException("Invalid category");
         }

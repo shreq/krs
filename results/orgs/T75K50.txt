@@ -1,0 +1,8 @@
+          imf       icco      opec      worldbank ec        
+imf       0,563     0,063     0,000     0,375     0,000     
+icco      NaN       NaN       NaN       NaN       NaN       
+opec      0,061     0,121     0,636     0,000     0,182     
+worldbank 0,316     0,000     0,053     0,526     0,105     
+ec        0,167     0,273     0,106     0,045     0,409     
+
+{precision=0.4686621726730619, recall=NaN, accuracy=0.5, f1=NaN}
