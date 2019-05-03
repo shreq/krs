@@ -3,12 +3,12 @@
     "trainingPercent": 60
   },
   "training": {
-    "keywordsCount": 2,
-    "method": "idf"
+    "keywordsCount": 35,
+    "method": "tf"
   },
   "knnParams": {
-    "k": 2,
-    "distanceMetric": "manhattan"
+    "k": 5,
+    "distanceMetric": "euclidean"
   },
-  "category": "course"
+  "category": "type"
 }

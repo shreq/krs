@@ -1,0 +1,9 @@
+      soup  salad cake  past  pasta meat  
+soup  1,000 0,000 0,000 0,000 0,000 0,000 
+salad 1,000 0,000 0,000 0,000 0,000 0,000 
+cake  1,000 0,000 0,000 0,000 0,000 0,000 
+past  NaN   NaN   NaN   NaN   NaN   NaN   
+pasta 0,750 0,250 0,000 0,000 0,000 0,000 
+meat  1,000 0,000 0,000 0,000 0,000 0,000 
+
+{precision=NaN, recall=NaN, accuracy=0.09090909090909091, f1=NaN}

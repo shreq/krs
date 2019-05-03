@@ -1,0 +1,6 @@
+          dessert   breakfast dinner    
+dessert   0,615     0,385     0,000     
+breakfast 0,727     0,273     0,000     
+dinner    0,650     0,350     0,000     
+
+{precision=NaN, recall=0.29603729603729606, accuracy=0.25, f1=NaN}
