@@ -12,6 +12,7 @@ import org.apache.commons.math3.ml.distance.ChebyshevDistance;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
 import org.apache.commons.math3.ml.distance.ManhattanDistance;
+import org.assertj.core.data.MapEntry;
 import org.json.simple.parser.ParseException;
 import org.xml.sax.SAXException;
 

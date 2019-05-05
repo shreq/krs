@@ -18,7 +18,7 @@ public class Article {
         allowedLabels.put(Settings.Category.Places, new HashSet<>(Arrays.asList("usa", "france", "uk", "canada", "japan")));
         allowedLabels.put(Settings.Category.Orgs, new HashSet<>(Arrays.asList("ec", "worldbank", "imf", "opec", "icco")));
         allowedLabels.put(Settings.Category.Course, new HashSet<>(Arrays.asList("dessert", "breakfast", "dinner")));
-        allowedLabels.put(Settings.Category.Type, new HashSet<>(Arrays.asList("cake", "salad", "meat", "pasta", "soup", "past")));
+        allowedLabels.put(Settings.Category.Type, new HashSet<>(Arrays.asList("cake", "salad", "meat", "pasta", "soup")));
     }
 
     /**

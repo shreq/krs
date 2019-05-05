@@ -7,7 +7,7 @@
     "method": "tf"
   },
   "knnParams": {
-    "k": 5,
+    "k": 15,
     "distanceMetric": "euclidean"
   },
   "category": "type"
