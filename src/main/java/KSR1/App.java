@@ -6,13 +6,10 @@ import KSR1.Extractors.UniqueWordsExtractor;
 import KSR1.Knn.ClassificationObject;
 import KSR1.Knn.KnnClassifier;
 
-import KSR1.Preprocessing.SnowballStemmer;
-import KSR1.Statistics.Results;
 import org.apache.commons.math3.ml.distance.ChebyshevDistance;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
 import org.apache.commons.math3.ml.distance.ManhattanDistance;
-import org.assertj.core.data.MapEntry;
 import org.json.simple.parser.ParseException;
 import org.xml.sax.SAXException;
 
@@ -52,7 +49,7 @@ public class App {
 
         documents.filterCategory(settings.category);
         LOGGER.log(Level.INFO, "{0} articles after filtering", documents.articles.size());
-        documents.preprocess(new SnowballStemmer());
+        documents.preprocess();
 
         DocumentCollection trainingDocuments = documents.splitGetSubset(settings.trainingPercent);
         List<FeatureExtractor> featureExtractors = new ArrayList<>();

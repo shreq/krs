@@ -7,8 +7,8 @@ import KSR1.Settings;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static KSR1.Statistics.DocumentCollectionStats.documentFrequency;
-import static KSR1.Statistics.DocumentCollectionStats.termFrequency;
+import static KSR1.DocumentCollectionStats.documentFrequency;
+import static KSR1.DocumentCollectionStats.termFrequency;
 
 public class KeywordExtractor implements FeatureExtractor {
 

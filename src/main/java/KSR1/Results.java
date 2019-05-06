@@ -1,4 +1,4 @@
-package KSR1.Statistics;
+package KSR1;
 
 import KSR1.Article;
 import KSR1.Settings;

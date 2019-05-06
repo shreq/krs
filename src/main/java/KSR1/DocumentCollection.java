@@ -61,7 +61,8 @@ public class DocumentCollection {
         }
     }
 
-    public void preprocess(Stemmer stemmer){
+    public void preprocess(){
+        Stemmer stemmer = new Stemmer();
         for (int i=0; i<articles.size(); i++){
             ArrayList<String> wordlist = new ArrayList<>();
             Article article = articles.get(i);

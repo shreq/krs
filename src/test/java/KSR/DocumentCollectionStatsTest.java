@@ -1,7 +1,7 @@
-package KSR.Statistics;
+package KSR;
 
 import KSR1.Article;
-import KSR1.Statistics.DocumentCollectionStats;
+import KSR1.DocumentCollectionStats;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
