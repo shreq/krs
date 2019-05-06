@@ -17,8 +17,8 @@ public class Article {
     static {
         allowedLabels.put(Settings.Category.Places, new HashSet<>(Arrays.asList("usa", "france", "uk", "canada", "japan")));
         allowedLabels.put(Settings.Category.Orgs, new HashSet<>(Arrays.asList("ec", "worldbank", "imf", "opec", "icco")));
-        allowedLabels.put(Settings.Category.Course, new HashSet<>());
-        allowedLabels.put(Settings.Category.Type, new HashSet<>());
+        allowedLabels.put(Settings.Category.Course, new HashSet<>(Arrays.asList("dessert", "breakfast", "dinner")));
+        allowedLabels.put(Settings.Category.Type, new HashSet<>(Arrays.asList("cake", "salad", "meat", "pasta", "soup")));
     }
 
     /**
@@ -91,12 +91,20 @@ public class Article {
             return false;
         }else if(category == Settings.Category.Places && places.size() != 1){
             return false;
+        }else if(category == Settings.Category.Course && course == null){
+            return false;
+        }else if(category == Settings.Category.Type && type == null){
+            return false;
         }
         return allowedLabels.get(category).contains(getLabel(category));
     }
 
     public void setText(String text){
         this.text = text;
+    }
+
+    public String getText() {
+        return text;
     }
 
     public void setWordlist(ArrayList<String> wordlist) {

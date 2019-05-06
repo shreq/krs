@@ -1,14 +1,14 @@
 {
   "data": {
-    "trainingPercent": 60
+    "trainingPercent": 90
   },
   "training": {
-    "keywordsCount": 35,
+    "keywordsCount": 50,
     "method": "dfratio"
   },
   "knnParams": {
-    "k": 7,
-    "distanceMetric": "euclidean"
+    "k": 5,
+    "distanceMetric": "manhattan"
   },
-  "category": "places"
+  "category": "type"
 }

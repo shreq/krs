@@ -6,15 +6,15 @@ import KSR1.Extractors.UniqueWordsExtractor;
 import KSR1.Knn.ClassificationObject;
 import KSR1.Knn.KnnClassifier;
 
-import KSR1.Preprocessing.SnowballStemmer;
-import KSR1.Statistics.Results;
 import org.apache.commons.math3.ml.distance.ChebyshevDistance;
 import org.apache.commons.math3.ml.distance.DistanceMeasure;
 import org.apache.commons.math3.ml.distance.EuclideanDistance;
 import org.apache.commons.math3.ml.distance.ManhattanDistance;
 import org.json.simple.parser.ParseException;
+import org.xml.sax.SAXException;
 
 import javax.naming.ConfigurationException;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.util.*;
 import java.util.logging.*;
@@ -35,16 +35,21 @@ public class App {
 
         DocumentCollection documents = null;
         try {
+            if (settings.category == Settings.Category.Places || settings.category == Settings.Category.Orgs) {
 //            documents = new DocumentCollection("src/main/resources/reuters/reut2-017.sgm");
-            documents = new DocumentCollection(reutFiles);
-        } catch (FileNotFoundException e) {
+                documents = new DocumentCollection(reutFiles);
+            }
+            else {
+                documents = new DocumentCollection(custFile);
+            }
+        } catch (IOException | SAXException | ParserConfigurationException e) {
             System.exit(EXIT_IO);
         }
         LOGGER.log(Level.INFO, "Loaded {0} articles", documents.articles.size());
 
         documents.filterCategory(settings.category);
         LOGGER.log(Level.INFO, "{0} articles after filtering", documents.articles.size());
-        documents.preprocess(new SnowballStemmer());
+        documents.preprocess();
 
         DocumentCollection trainingDocuments = documents.splitGetSubset(settings.trainingPercent);
         List<FeatureExtractor> featureExtractors = new ArrayList<>();

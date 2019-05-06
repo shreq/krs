@@ -33,8 +33,8 @@ public class XMLFile {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element element = (Element) node;
 
-                article.type = element.getElementsByTagName("TYPE").item(0).getTextContent();
-                article.course = element.getElementsByTagName("COURSE").item(0).getTextContent();
+                article.type = element.getElementsByTagName("TYPE").item(0).getTextContent().trim();
+                article.course = element.getElementsByTagName("COURSE").item(0).getTextContent().trim();
 
                 NodeList nodeListText = element.getElementsByTagName("TEXT");
                 for (int j = 0; j < nodeListText.getLength(); j++) {
@@ -43,8 +43,8 @@ public class XMLFile {
                     if (nodeText.getNodeType() == Node.ELEMENT_NODE) {
                         Element elementText = (Element) nodeText;
 
-                        article.title = elementText.getElementsByTagName("TITLE").item(0).getTextContent();
-                        article.setText(elementText.getElementsByTagName("BODY").item(0).getTextContent());
+                        article.title = elementText.getElementsByTagName("TITLE").item(0).getTextContent().trim();
+                        article.setText(elementText.getElementsByTagName("BODY").item(0).getTextContent().trim().replaceAll("\n", "").replaceAll("\\s{2,}", " "));
                     }
                 }
             }
